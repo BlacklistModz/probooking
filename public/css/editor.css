@@ -1,0 +1,97 @@
+/* =========================================================        
+          .o88
+          "888
+ .oooo.    888  .oo.    ..o88.     ooo. .oo.    .oooo`88
+d88' `8b   88bP"Y88b   888P"Y88b  "888P"Y88b   888' `88b 
+888        88b   888   888   888   888   888   888   888
+888. .88   888   888   888   888   888   888   888. .880
+ 8`bo8P'  o888o o888o   8`bod8P'  o888o o888o   .oooo88o
+                                                     088`
+                                                    .o88
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css?family=Prompt:300');
+
+
+*, *:before, *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box
+}
+body {
+    background-color: #fff;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    direction: ltr;
+    unicode-bidi: embed;
+    word-wrap: break-word;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-family: 'Prompt', sans-serif;
+    line-height: 1.28;
+}
+a {
+    cursor: text;
+    color: #0084b4;
+    text-decoration: none;
+    outline: 0;
+}
+a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    color: #06802b
+}
+p {
+    margin-top: 28px;
+    margin-bottom: 28px;
+}
+p:first-child {
+    margin-top: 0
+}
+p:last-child {
+    margin-bottom: 0
+}
+blockquote {
+    border-left: 10px solid #82c55b;
+    margin: 28px 0;
+    padding: 0 0 0 28px;
+    color: #777;
+    background-color: transparent;
+    box-sizing: border-box;
+    word-wrap: break-word
+}
+ul, ol {
+    margin: 10px 0 10px 35px;
+    padding: 0;
+}
+ul li {
+    list-style: disc;
+}
+ul li, ol li {
+    padding-left: 4px;
+    margin-bottom: 8px;
+}
+blockquote ul, blockquote ol {
+    margin: 10px 0 10px 25px
+}
+h3 {
+    font-style: 15px;
+    font-weight: bold;
+}
+.mce-content-body img[data-mce-selected], hr[data-mce-selected] {
+    outline: none
+}
+.img {
+    height: 100%;
+    width: auto;
+    display: block;
+}
+.img.scaledImageFitWidth {
+    width: 100%;
+    height: auto
+}
+.img {
+    width: 100%;
+    height: auto
+}

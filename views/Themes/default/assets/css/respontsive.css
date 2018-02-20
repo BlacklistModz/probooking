@@ -1,0 +1,211 @@
+/* =========================================================        
+          .o88
+          "888
+ .oooo.    888  .oo.    ..o88.     ooo. .oo.    .oooo`88
+d88' `8b   88bP"Y88b   888P"Y88b  "888P"Y88b   888' `88b 
+888        88b   888   888   888   888   888   888   888
+888. .88   888   888   888   888   888   888   888. .880
+ 8`bo8P'  o888o o888o   8`bod8P'  o888o o888o   .oooo88o
+                                                     088`
+                                                    .o88
+============================================================ */@media screen and (max-width:1069px) {
+.container {
+	width: auto;
+	margin-left: 24px;
+	margin-right: 24px
+}
+#header-2 {
+	position: relative;
+	background-color: var(--title-background)
+}
+#header-2 .container {
+	margin-left: 0;
+	margin-right: 0
+}
+.page-logo {
+	float: none;
+	margin-top: 0;
+	height: 44px;
+	width: 140px;
+	position: absolute;
+	top: -44px;
+	left: 24px
+}
+.page-logo a {
+	background-image: url('../images/logo-1.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: 100%;
+	text-indent: -99999px;
+	height: 44px;
+	width: 140px
+}
+#primary-menu-toggle {
+	display: inline-block
+}
+body.scroll-down #primary-menu-toggle {
+	display: none
+}
+.main-menu {
+	width: 100%;
+	margin-top: 0;
+	display: none
+}
+.main-menu .nav {
+	border-top-color: #000;
+	border-bottom: 0;
+	padding-left: 24px;
+	padding-right: 24px
+}
+.main-menu .nav>li {
+	float: none;
+	text-align: left;
+	padding-left: 0;
+	padding-right: 0
+}
+.main-menu .dropdown-content {
+	position: relative;
+	display: block;
+	background-color: transparent;
+	box-shadow: none
+}
+.main-menu .dropdown-content a {
+	color: var(--link-color)
+}
+.main-menu .dropdown-content a:hover {
+	background-color: transparent
+}
+.products-grid.cell-4 .item {
+	width: 50%
+}
+.product-period-item .product-image-w {
+	width: 100%
+}
+.product-period-item .product-content {
+	width: auto;
+	margin-left: 0;
+	padding-left: 0
+}
+#footer-1 {
+	max-width: 450px;
+	margin: 0 auto
+}
+#footer-1 .span4 {
+	width: 100%;
+	margin-bottom: 30px
+}
+#footer-1 .span4:last-child {
+	margin-bottom: 0
+}
+.post .product-meta {
+	text-align: center;
+	padding: 10px 0
+}
+.module.parallax .article-single {
+	padding-top: 50px !important
+}
+.product .product-image-wrap {
+	width: 100%;
+	float: none
+}
+}
+@media screen and (max-width:767px) {
+.container {
+	margin-left: 12px;
+	margin-right: 12px
+}
+.login-popup .register {
+	display: none
+}
+.front-shop-wrap {
+	height: calc(100vh - 44px)
+}
+.front-shop {
+	padding-top: 0;
+	padding-bottom: 0;
+	top: 50%;
+
+	-ms-transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%)
+}
+.login-popup-layer {
+	width: 300px
+}
+.slogan h1 {
+	padding-left: 0;
+	font-size: 150%
+}
+.slogan h2 {
+	font-size: 180%
+}
+.showcase-item {
+	width: 100%
+}
+.showcase-item .showcase-inner, .showcase-item.active .showcase-inner {
+	transform: scale(1);
+	opacity: 1;
+	margin-left: 0;
+	margin-right: 0
+}
+.products-showcase .control {
+	display: block
+}
+.menu-tour-outer {
+	border-bottom: 0
+}
+.menu-tour {
+	height: 0
+}
+body.scroll-down .menu-tour-wrap {
+	height: 94px
+}
+body.scroll-down .menu-tour-wrap .container{
+	margin-left: 0;
+    margin-right: 0;
+}
+body.scroll-down .menu-tour-wrap ul{
+	display: block;
+	white-space: nowrap;
+    word-wrap: normal;
+}
+body.scroll-down .menu-tour-wrap .menu-tour-nav{
+	position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    /*background-color: #0b0b57*/
+}
+body.scroll-down .menu-tour-wrap ul>li>a{
+	line-height: 50px
+}
+
+.menu-tour-wrap ul {
+	display: none
+}
+.products-grid.cell-4 .item {
+	width: 100%
+}
+.post .product-meta>li>strong {
+	display: block
+}
+.product-program th{
+	font-size: 10px;
+}
+.product-program th, .product-program td{
+	padding: 6px;
+}
+.product-program{
+	margin-left: -12px;
+	margin-right: -12px;
+}
+.product .product-content-wrap{
+	overflow: inherit
+}
+
+}
+@media screen and (max-device-width:480px) {
+	body {
+		-webkit-text-size-adjust: none
+	}
+}
