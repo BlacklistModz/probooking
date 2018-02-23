@@ -158,3 +158,4 @@
 		</div>
 	</div>
 </section>
+<?php include("sections/footer.php"); ?>

@@ -36,7 +36,7 @@ if( !empty($this->results['lists']) ){
             '<td class="contact">'.$item['agen_fname'].' '.$item['agen_lname'].'</td>'.
             '<td class="contact">'.$item['user_fname'].' '.$item['user_lname'].'</td>'.
             '<td class="actions">'.
-                '<span class="gbtn"><a href="" class="btn btn-blue"><i class="icon-pencil"></i> จัดการ</a></span>'.
+                '<span class="gbtn"><a href="'.URL.'office/booking/basic/'.$item['book_id'].'" class="btn btn-blue"><i class="icon-pencil"></i> จัดการ</a></span>'.
             '</td>'.
 
         '</tr>';
