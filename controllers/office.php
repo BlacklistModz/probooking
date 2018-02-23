@@ -131,6 +131,11 @@ class Office extends Controller {
                 $this->view->setData('status', $this->model->query('booking')->status());
             }
         }
+        elseif( $section == "monitor" ){
+            $this->view->setData('tap', "monitor");
+            $this->view->setData('status', $this->model->query('products')->periodStatus());
+            $this->view->setData('country', $this->model->query('products')->categoryList());
+        }
         else{
             $this->error();
         }
@@ -182,5 +187,94 @@ class Office extends Controller {
             }
         }
         $this->view->render($render);
+    }
+
+    public function series($id=null, $bus=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        $bus = isset($_REQUEST["bus"]) ? $_REQUEST["bus"] : $bus;
+
+        $this->view->setPage('title', 'ซีรีย์ทัวร์');
+        $this->view->setPage('on', 'series');
+
+        if( !empty($id) && !empty($bus) ){
+            $this->view->setData('tab', 'booking'); 
+
+            $item = $this->model->query('products')->period($id ,array('office'=>true, 'bus'=>$bus));
+            if( empty($item) ) $this->error();
+
+            $this->view->setData('item', $item);
+
+            $options = array(
+                'period'=>$item['per_id'],
+                'bus'=>$item['bus_no'],
+                'unlimit'=>true,
+                'dir'=>'ASC'
+                // 'q'=> !empty($_REQUEST["q"]) ? $_REQUEST["q"] : '' 
+            );
+            $this->view->setData('booking', $this->model->query('booking')->lists( $options ));
+            $render = "series/profile/display"; 
+        }
+        else{
+            if( $this->format=='json' ){
+                $results = $this->model->query('products')->lists( array('office'=>true, 'period'=>true) );
+            // print_r($results);die;
+                $this->view->setData('results', $results);
+                $render = "series/lists/json";
+            }
+            else{
+                $this->view->setData("category", $this->model->query("products")->categoryList());
+                $render = "series/lists/display";
+            }
+        }
+        $this->view->render( $render );
+    }
+
+    public function booking($section=null, $id=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+
+        $this->view->setPage('on', 'booking');
+        $this->view->setPage('title', 'จัดการการจองทัวร์');
+
+        if( !empty($section) ){
+            if( !empty($id) ){
+                $item = $this->model->query('booking')->get($id);
+                if( empty($item) ) $this->error();
+            }
+
+            if( $section == "basic" ){
+
+            }
+            elseif( $section == "payment" ){
+
+            }
+            elseif( $section == "customers" ){
+
+            }
+            else{
+                $this->error();
+            }
+        }
+        else{
+            if( $this->format=='json' ){
+                $results = $this->model->query('booking')->lists();
+                $this->view->setData('results', $results);
+                $render = "booking/lists/json";
+            }
+            else{
+                $this->view->setData('status', $this->model->query('booking')->status());
+                $render = "booking/lists/display";
+            }
+        }
+        $this->view->render( $render );
+    }
+
+    /* JSON ZONE */
+    public function room_detail(){
+        $period = isset($_REQUEST["period"]) ? $_REQUEST["period"] : null;
+        $bus = isset($_REQUEST["bus"]) ? $_REQUEST["bus"] : null;
+
+        if( empty($period) || empty($bus) ) $this->error();
+
+        $this->view->render( "booking/forms/room_detail" );
     }
 }

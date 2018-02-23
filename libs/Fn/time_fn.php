@@ -357,4 +357,12 @@ class Time_Fn extends _function {
         // $text = '<span class="timestamp" data-time="'.$timestamp.'" title="'.$title.'">'.$text.'</span>';
         return $text;
     }
+
+    public function DateTH( $timestamp ){
+        $theDate = date("j", strtotime($timestamp));
+        $theMonth = $this->month(date("n", strtotime($timestamp)));
+        $theYear = date("Y", strtotime($timestamp)) + 543;
+
+        return "{$theDate} {$theMonth} {$theYear}";
+    }
 }

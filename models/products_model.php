@@ -103,6 +103,12 @@ class Products_Model extends Model{
         $condition .= "period.per_date_start>=:periodStartDate";
         $params[":periodStartDate"] = date('Y-m-d');
 
+        if( !empty($options["office"]) ){
+            $condition .= !empty($condition) ? " AND " : "";
+            $condition .= "period.status=:periodStatus";
+            $params[":periodStatus"] = 1;
+            $arr['total'] = false;
+        }
 
         if( !empty($options['unlimited']) ){
             $options['limit'] = $arr['total'];
@@ -115,6 +121,11 @@ class Products_Model extends Model{
 
         $sql = "SELECT {$_field} FROM {$_table} {$condition} {$groupby} {$orderby} {$limit}";
         if( isset($_GET['chong_debug']) ){ if( $_GET['chong_debug']=='sql' ){ echo $sql; die; } }
+
+        if( !empty($options["office"]) ){
+            $arr['total'] = count($this->db->select("SELECT {$_field} FROM {$_table} {$condition} {$groupby} {$orderby}", $params));
+        }
+
         $arr['lists'] = $this->buildFrag( $this->db->select($sql, $params ), $options );
 
         if( ($options['pager']*$options['limit']) >= $arr['total'] ) $options['more'] = false;
@@ -160,7 +171,7 @@ class Products_Model extends Model{
     	$data['image_cover_url'] = !empty($image) ? UPLOADS_URL.$image : "";
 
         if( !empty($options["period"]) ){
-            $data['period'] = $this->periodList($data['id']);
+            $data['period'] = $this->periodList($data['id'], $options);
         }
 
         $data['permit']['del'] = true;
@@ -284,10 +295,32 @@ class Products_Model extends Model{
         , p.per_url_pdf
 
         , p.status
+
+        , p.per_hotel
+        , p.per_hotel_tel
+        , p.arrival_date
+
+        , bl.bus_no
+        , bl.bus_qty
     ";
-    private $_periodTable = "period p";
-    public function period($id)
+    private $_periodTable = "period p LEFT JOIN bus_list bl ON p.per_id=bl.per_id";
+    public function period($id, $options=array())
     {
+        $where_str = "";
+        $where_arr = array();
+
+        if( !empty($options["bus"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "bl.bus_no=:bus";
+            $where_arr[":bus"] = $options["bus"];
+        }
+
+        $where_str .= !empty($where_str) ? " AND " : "";
+        $where_str .= "p.per_id=:id";
+        $where_arr[":id"] = $id;
+
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+
         $sth = $this->db->prepare("
 
             SELECT 
@@ -300,13 +333,69 @@ class Products_Model extends Model{
 
                 , airline.air_name
 
-            FROM period p LEFT JOIN (series LEFT JOIN airline ON series.air_id=airline.air_id) ON series.ser_id=p.ser_id 
-            WHERE p.per_id=:id 
+                , country.country_name
+                
+            FROM period p LEFT JOIN (series LEFT JOIN airline ON series.air_id=airline.air_id
+                                            LEFT JOIN country ON series.country_id=country.country_id
+                                    ) ON series.ser_id=p.ser_id 
+            LEFT JOIN bus_list bl ON p.per_id=bl.per_id
+            {$where_str}
             LIMIT 1
 
         ");
-        $sth->execute( array( ':id' => $id) );
-        return  $sth->rowCount()==1 ? $sth->fetch( PDO::FETCH_ASSOC ): array();
+        $sth->execute( $where_arr );
+        return  $sth->rowCount()==1 ?  $this->convertPeriod( $sth->fetch( PDO::FETCH_ASSOC ), $options ) : array();
+    }
+    public function convertPeriod( $data, $options=array() ){
+        if( !empty($options["office"]) ){
+            $data['payment'] = $this->periodPayment( $data["per_id"], $data["bus_no"] );
+            // $data['booklist'] = $this->query('booking')->lists( array('period'=>$data["per_id"], 'bus'=>$data["bus_no"]) );
+            // $data["booklist"] = $this->bookingLists( $data["per_id"], $data["bus_no"] );
+            $data['booking'] = $this->seatBooked( $data['per_id'], $data["bus_no"] );
+            $data['status_arr'] = $this->getPeriodStatus( $data['status'] );
+        }
+        return $data;
+    }
+    public function periodPayment($period, $bus){
+        $sth = $this->db->prepare("SELECT COALESCE(SUM(book_amountgrandtotal),0) AS total_booking FROM booking WHERE per_id=:period AND bus_no=:bus AND status!=40");
+        $sth->execute( array(":period"=>$period, ":bus"=>$bus) );
+        $booking = $sth->fetch( PDO::FETCH_ASSOC );
+
+        $sth = $this->db->prepare("SELECT COALESCE(SUM(pay_received),0) AS total_received FROM payment LEFT JOIN booking ON payment.book_id=booking.book_id WHERE booking.per_id=:period AND booking.bus_no=:bus AND payment.status=1");
+        $sth->execute( array(":period"=>$period, ":bus"=>$bus) );
+        $received = $sth->fetch( PDO::FETCH_ASSOC );
+
+        $data["booking"] = $booking["total_booking"];
+        $data["received"] = $received["total_received"];
+        $data["balance"] = $data["booking"] - $data["received"];
+
+        return $data;
+    }
+    public function bookingLists( $period, $bus ){
+        $data = array();
+        $_field = "b.book_id AS id
+                  , b.book_code AS code
+                  , b.bus_no
+                  , SUM( bl.book_list_qty ) AS qty
+                  , b.book_discount
+                  , b.book_master_deposit
+                  , b.book_due_date_deposit
+                  , b.book_master_full_payment
+                  , b.book_due_date_full_payment
+                  , b.status";
+        $_table = "booking b 
+                   LEFT JOIN booking_list bl ON b.book_code=bl.book_code";
+
+        $_where = "b.per_id=:period AND b.bus_no=:bus AND bl.book_list_code IN (1,2,3)";
+        $_where_arr[":period"] = $period;
+        $_where_arr[":bus"] = $bus;
+
+        $results = $this->db->select("SELECT {$_field} FROM {$_table} WHERE {$_where} GROUP BY b.book_id", $_where_arr);
+        foreach ($results as $key => $value) {
+            $data[$key] = $value;
+            $data[$key]['status_arr'] = $this->query('booking')->getStatus( $value['status'] );
+        }
+        return $data;
     }
     public function busList($id)
     {
@@ -320,7 +409,7 @@ class Products_Model extends Model{
                 WHERE 
                         booking.per_id=:id
                     AND booking.bus_no=:bus_no
-                    AND booking_list.book_list_code IN ('1','2','3','4','5')
+                    AND booking_list.book_list_code IN ('1','2','3')
                     AND booking.status != 40
             ");
             $sth->execute( array( ':id'=> $id, ':bus_no'=> $value['bus_no']) );
@@ -336,7 +425,7 @@ class Products_Model extends Model{
         return $this->db->select("SELECT user_id as id, CONCAT(`user_fname`, ' ', `user_lname`, '(', `user_tel`, ')') AS 'name' FROM user WHERE status=:status AND group_id IN (3,5,7) ORDER BY user_fname", array(':status'=>1 ));
     }
 
-    public function periodList($id){
+    public function periodList($id, $options=array()){
 
         $results = $this->db->select("SELECT {$this->_periodSelect} FROM {$this->_periodTable} WHERE p.ser_id=:id AND per_date_start>=:d AND status != 9 ORDER BY per_date_start ASC", array(':id'=>$id, ':d'=>date('Y-m-d')));
 
@@ -349,10 +438,10 @@ class Products_Model extends Model{
 
             // 
             // $booking = 0;
-            $data[$key]['booking'] = $booking = $this->seatBooked( $value['per_id'] );
-            $data[$key]['seats'] = $value['per_qty_seats'];
+            $data[$key]['booking'] = $booking = $this->seatBooked( $value['per_id'], $value["bus_no"] );
+            $data[$key]['seats'] = $value['bus_qty'];
 
-            $data[$key]['balance'] = $value['per_qty_seats'] - $booking['booking'];
+            $data[$key]['balance'] = $value['bus_qty'] - $booking['booking'];
             // $data[$key]['bb'] = $rr;
 
             if( !empty($data[$key]['url_pdf']) ){
@@ -379,11 +468,16 @@ class Products_Model extends Model{
 
             $data[$key]['booking'] = $booking;
 
+            $data[$key]['status_arr'] = $this->getPeriodStatus($value['status']);
+
+            if( !empty($options["office"]) ){
+                $data[$key]["booklist"] = $this->getBookList( $value["per_id"], $value["bus_no"] );
+            }
         }
         // print_r($data); die;
         return $data;
     }
-    public function seatBooked($id)
+    public function seatBooked($id, $bus_no=null)
     {
         $sth = $this->db->prepare("
             SELECT 
@@ -393,10 +487,11 @@ class Products_Model extends Model{
             FROM booking_list LEFT JOIN booking ON booking.book_code=booking_list.book_code 
             WHERE 
                     booking.per_id=:id
-                AND booking_list.book_list_code IN ('1','2','3','4','5')
+                AND booking.bus_no=:bus
+                AND booking_list.book_list_code IN ('1','2','3')
                 AND booking.status != 40
         ");
-        $sth->execute( array( ':id'=> $id) );
+        $sth->execute( array( ':id'=> $id, ':bus'=>$bus_no) );
 
         return $sth->fetch( PDO::FETCH_ASSOC );
         // print_r($fdata); die;
@@ -436,6 +531,8 @@ class Products_Model extends Model{
                 ,a.`per_com_company_agency`
                 ,a.`single_charge`
                 ,a.`per_discount`
+                ,bl.`bus_qty`
+                ,bl.`bus_no`
                 ,(SELECT  COALESCE(SUM(b.`book_list_qty`),0) FROM `booking_list` b LEFT OUTER JOIN `booking` e on b.`book_code` = e.`book_code` WHERE e.`per_id` =  a.`per_id` 
                 AND e.`bus_no` = bl.`bus_no` 
                 AND b.`book_list_code` IN ('1','2','3')
@@ -462,11 +559,72 @@ class Products_Model extends Model{
 
         foreach ($results as $key => $value) {
             $data[$key] = $this->_cutFirstFieldName("per_", $value);
-            $data[$key]['booking'] = $booking = $this->seatBooked( $value['per_id'] );
+            $data[$key]['booking'] = $booking = $this->seatBooked( $value['per_id'], $value["bus_no"] );
             $data[$key]['seats'] = $value['per_qty_seats'];
             $data[$key]['balance'] = $value['per_qty_seats'] - $booking['booking'];
         }
 
+        return $data;
+    }
+    public function periodStatus(){
+        $a[] = array('id'=>1, 'name'=>'เปิดจอง', 'cls'=>'bg-green-light');
+        $a[] = array('id'=>2, 'name'=>'เต็ม', 'cls'=>'bg-danger-dark');
+        $a[] = array('id'=>3, 'name'=>'ปิดทัวร์', 'cls'=>'bg-warning-dark');
+        $a[] = array('id'=>9, 'name'=>'ระงับการใช้งาน', 'cls'=>'bg-danger');
+        $a[] = array('id'=>10, 'name'=>'ตัดตั๋ว', 'cls'=>'bg-danger');
+
+        return $a;
+    }
+    public function getPeriodStatus($id){
+        $data = array();
+        foreach ($this->periodStatus() as $key => $value) {
+            if( $id == $value["id"] ){
+                $data = $value;
+                break;
+            }
+        }
+        return $data;
+    }
+
+    public function getBookList( $id, $bus_no ){
+        $data = array();
+        $results = $this->db->select("SELECT 
+                      agency.agen_fname as name
+                    , agency_company.agen_com_name as company_name
+                    , user.user_fname as sale_name
+                    , user.user_nickname AS sale_nickname
+                    , booking.status
+                    , booking.book_id
+                    , booking.book_code
+                    , booking.book_is_guarantee
+                    , COALESCE( (SELECT SUM(booking_list.book_list_qty) FROM booking_list WHERE book_list_code IN ('1','2','3') AND booking_list.book_code=booking.book_code) ,0) as qty
+
+                    FROM booking_list
+                        LEFT JOIN booking ON booking_list.book_code=booking.book_code
+                        LEFT JOIN (
+                            agency LEFT JOIN agency_company ON agency_company.agen_com_id=agency.agency_company_id
+                        ) ON booking.agen_id=agency.agen_id 
+                        LEFT JOIN user ON booking.user_id=user.user_id
+                    WHERE 
+                            booking.per_id={$id}
+                        AND booking.bus_no={$bus_no}
+                        AND booking.status!=40
+                    GROUP BY booking.book_id
+                    
+                    ORDER BY booking.status DESC, booking.create_date ASC");
+
+        return $this->convertBookList( $results );
+    }
+    public function convertBookList( $results ){
+        $data = array();
+        foreach ($results as $key => $value) {
+            if( $value['status']=='05' ){
+                $data["waiting"][] = $value;
+            }
+            else{
+                $data["booking"][] = $value;
+            }
+        }
         return $data;
     }
 }

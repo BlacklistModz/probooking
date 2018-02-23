@@ -95,12 +95,12 @@ class Reports_Model extends Model{
 
             $status = '';
             foreach ($options["status"] as $key => $value) {
-                $status .= !empty($status) ? "," : "";
-                $status .= $value;
+                $status .= !empty($status) ? " OR " : "";
+                $status .= "b.status={$value}";
             }
             if( !empty($status) ){
                 $where_str .= !empty($where_str) ? " AND " : "";
-                $where_str .= "b.status IN ({$status})";
+                $where_str .= "({$status})";
             }
         }
 
@@ -300,12 +300,12 @@ class Reports_Model extends Model{
 
             $status = '';
             foreach ($options["status"] as $key => $value) {
-                $status .= !empty($status) ? "," : "";
-                $status .= $value;
+                $status .= !empty($status) ? " OR " : "";
+                $status .= "b.status={$value}";
             }
             if( !empty($status) ){
                 $where_str .= !empty($where_str) ? " AND " : "";
-                $where_str .= "b.status IN ({$status})";
+                $where_str .= "({$status})";
             }
         }
 
@@ -332,6 +332,91 @@ class Reports_Model extends Model{
         }
 
         $data['options'] = $options;
+        return $data;
+    }
+    public function listsMonitor( $options=array() ){
+        $data = array();
+        $data["total_seat"] = 0;
+        $data["total_payment"] = 0;
+
+        $field = "per.per_id
+                  , per.per_date_start
+                  , per.per_date_end
+
+                  , ser.ser_code
+                  , ser.ser_name
+
+                  , bus.bus_qty
+                  , bus.bus_no";
+        $table = "period per 
+                  LEFT JOIN series ser ON per.ser_id=ser.ser_id
+                  LEFT JOIN bus_list bus ON bus.per_id=per.per_id";
+
+        $where_str = '';
+        $where_arr = array();
+
+        if( !empty($options["start"]) && !empty($options["end"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "(per.per_date_start BETWEEN :s AND :e)";
+            $where_arr[":s"] = $options["start"];
+            $where_arr[":e"] = $options["end"];
+        }
+        if( !empty($options["country"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "ser.country_id=:country";
+            $where_arr[":country"] = $options["country"];
+        }
+         if( !empty($options["series"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "per.ser_id=:series";
+            $where_arr[":series"] = $options["series"];
+        } 
+        if( !empty($options["status"]) ){
+
+            $status = '';
+            foreach ($options["status"] as $key => $value) {
+                $status .= !empty($status) ? "," : "";
+                $status .= $value;
+            }
+            if( !empty($status) ){
+                $where_str .= !empty($where_str) ? " AND " : "";
+                $where_str .= "per.status IN ({$status})";
+            }
+        }
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+        $results = $this->db->select( "SELECT {$field} FROM {$table} {$where_str} GROUP BY bus.bus_id ORDER BY per.per_date_start ASC", $where_arr );
+        $data["total"] = count($results);
+        $data["lists"] = array();
+        foreach ($results as $key => $value) {
+            $data["lists"][$key] = $value;
+
+            /* SET book_qty */
+            $sth = $this->db->prepare("
+                SELECT 
+                COALESCE(SUM(booking_list.book_list_qty),0) as qty
+                FROM booking_list LEFT JOIN booking ON booking.book_code=booking_list.book_code 
+                WHERE booking.per_id=:id AND booking.bus_no=:bus AND booking_list.book_list_code IN ('1','2','3') AND booking.status != 40");
+            $sth->execute( array( ':id'=> $value["per_id"], ':bus'=>$value["bus_no"]) );
+            $sthData = $sth->fetch( PDO::FETCH_ASSOC );
+
+            $data["lists"][$key]["book_qty"] = $sthData["qty"];
+            $data["total_payment"] += $sthData["qty"];
+
+            /* SET Payment */
+            $payment = $this->db->select("SELECT pay_date, pay_received 
+                                          FROM payment LEFT JOIN booking ON payment.book_id=booking.book_id 
+                                          WHERE booking.per_id='{$value["per_id"]}' AND payment.status=1");
+            foreach ($payment as $pay) {
+                $month = date("Y-n", strtotime($pay["pay_date"]));
+                if( empty($data["lists"][$key][$month]["total"]) ){
+                    $data["lists"][$key][$month]["total"] = 0;
+                }
+                $data["lists"][$key][$month]["total"] += $pay["pay_received"];
+            }
+            $data["total_seat"] += $value["bus_qty"];
+        }
+
+        $data["options"] = $options;
         return $data;
     }
 

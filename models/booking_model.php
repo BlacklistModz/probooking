@@ -12,7 +12,9 @@ class Booking_Model extends Model {
     private $_table = "booking b 
                        LEFT JOIN agency ag ON b.agen_id=ag.agen_id
                        LEFT JOIN period per ON b.per_id=per.per_id
-                       LEFT JOIN series ser ON per.ser_id=ser.ser_id";
+                       LEFT JOIN series ser ON per.ser_id=ser.ser_id
+                       LEFT JOIN agency_company ac ON ag.agency_company_id=ac.agen_com_id
+                       LEFT JOIN user u ON b.user_id=u.user_id";
     private $_field = "b.*
                        , ag.agen_fname
                        , ag.agen_lname
@@ -23,6 +25,13 @@ class Booking_Model extends Model {
                        , per.per_url_pdf 
                        , per.per_date_start
                        , per.per_date_end
+
+                       , ac.agen_com_name
+
+                       , u.user_fname
+                       , u.user_lname
+                       , u.user_nickname
+                       , u.user_name
                     
                        , ser.ser_id
                        , ser.ser_name
@@ -49,6 +58,10 @@ class Booking_Model extends Model {
         $where_str = "";
         $where_arr = array();
 
+        if( isset($_REQUEST["status"]) ){
+            $options["status"] = $_REQUEST["status"];
+        }
+
         if( !empty($options["company"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";
             $where_str .= "ag.agency_company_id=:company";
@@ -59,6 +72,33 @@ class Booking_Model extends Model {
             $where_str .= !empty($where_str) ? " AND " : "";
             $where_str .= "b.agen_id=:agency";
             $where_arr[":agency"] = $options["agency"];
+        }
+
+        if( !empty($options["period"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.per_id=:period";
+            $where_arr[":period"] = $options["period"];
+        }
+
+        if( !empty($options["bus"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.bus_no=:bus";
+            $where_arr[":bus"] = $options["bus"];
+        }
+
+        if( isset($options["status"]) && $options["status"] != null ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.status=:status";
+            $where_arr[":status"] = $options["status"];
+        }
+
+        if( !empty($options["q"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "(b.book_code LIKE :q
+                           OR ag.agen_fname LIKE :q
+                           OR ser.ser_code LIKE :q
+                           OR ser.ser_name LIKE :q)";
+            $where_arr[":q"] = "%{$options["q"]}%";
         }
 
         $arr['total'] = $this->db->count($this->_table, $where_str, $where_arr);
@@ -206,21 +246,27 @@ class Booking_Model extends Model {
 
             /* SET DAY OF GO */
             $DayOfGo = $this->fn->q('time')->DateDiff(date("Y-m-d"), date("Y-m-d", strtotime($seats[0]["per_date_start"])));
-            if( $DayOfGo > 33 ){
-                $deposit_date = date("Y-m-d 18:00:00", strtotime("+2 day"));
-                $full_date = date("Y-m-d 18:00:00", strtotime("-30 day", strtotime($seats[0]["per_date_start"])));
-            }
-            elseif( $DayOfGo > 8 ){
-                $deposit_date = "";
-                $deposit_price = 0;
-                $full_date = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+            if( $DayOfGo > 31 ){ //32 day
+                $settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+                $settings['fullPayment']['date'] = date('Y-m-d 18:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+            }elseif ( $DayOfGo > 13 ){ //14 - 31 day
+                $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+                $settings['deposit']['date'] = '';
+                $settings['deposit']['price'] = 0;
+            }elseif($DayOfGo >7){ //13 - 8 day
+                $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+1 day"));
+                $settings['deposit']['price'] = 0;
+                $settings['deposit']['date'] = '';
+            }elseif($DayOfGo >3){ // 4 -7 day
+                $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+12 hour"));
+                $settings['deposit']['price'] = 0;
+                $settings['deposit']['date'] = '';
             }
             else{
-                $full_date = date("Y-m-d H:i", strtotime("+3 hour"));
-                $deposit_date = "";
-                $deposit_price = 0;
+                $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+                $settings['deposit']['price'] = 0;
+                $settings['deposit']['date'] = '';
             }
-
             /* จำนวนคนจองทั้งหมด (ตัด Waiting กับ ยกเลิกแล้ว) (นับ จอง / WL) */
             $book = $this->db->select("SELECT COALESCE(SUM(booking_list.book_list_qty),0) as qty FROM booking_list
                     LEFT JOIN booking ON booking_list.book_code=booking.book_code

@@ -112,6 +112,8 @@
 <script type="text/javascript">
 	$('.js-search').click(function(){
 
+		$("#reportDaily").html( '<div class="tac"><div class="loader-spin-wrap" style="display:inline-block;"><div class="loader-spin"></div></div></div>' );
+
 		// var date = $('[name=date]').val();
         var month = $('[name=month]').val();
         var year = $('[name=year]').val();

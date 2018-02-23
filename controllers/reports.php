@@ -125,6 +125,28 @@ class Reports extends Controller {
         $this->view->setPage('path', 'Themes/manage/pages/reports/sections/period/json');
         $this->view->render("monthy-main");
     }
+    public function monitor(){
+        $year = isset($_REQUEST['year']) ? $_REQUEST['year'] : date("Y");
+        $country = isset($_REQUEST["country"]) ? $_REQUEST["country"] : null;
+        $series = isset($_REQUEST["series"]) ? $_REQUEST["series"] : null;
+        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : null;
+
+        $start = date("Y-m-d", strtotime("{$year}-01-01"));
+        $end = date("Y-m-t", strtotime("{$year}-12-01"));
+
+        $options = array(
+            'start' => $start,
+            'end' => $end,
+            'country' => $country,
+            'series' => $series,
+            'status' => $status
+        );
+
+        $results = $this->model->listsMonitor( $options );
+        $this->view->setData('results', $results);
+        $this->view->setPage('path', 'Themes/manage/pages/reports/sections/monitor/json');
+        $this->view->render('json');
+    }
 
     /* GET DATA JSON */
     public function getProducts($country_id=null){

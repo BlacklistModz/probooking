@@ -2329,6 +2329,8 @@ if ( typeof Object.create !== 'function' ) {
 		setReport: function(){
 			var self = this;
 
+			self.$elem.find("#reportDaily").html( '<div class="tac"><div class="loader-spin-wrap" style="display:inline-block;"><div class="loader-spin"></div></div></div>' );
+
 			var date = self.$elem.find('[name=date]').val();
 			var country = self.$country.val();
 			var series = self.$series.val();

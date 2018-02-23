@@ -32,12 +32,13 @@
         $this->view->render("booking/display");
     }
 
-    public function register($period=null) {
+    public function register($period=null, $bus_no=null) {
 
         $period = isset($_REQUEST['period'])? $_REQUEST['period']: $period;
-        if( empty($this->me) || empty($period) ) $this->error();
+        $bus_no = isset($_REQUEST['bus_no'])? $_REQUEST['bus_no']: $bus_no;
+        if( empty($this->me) || empty($period) || empty($bus_no) ) $this->error();
 
-        $item = $this->model->query('products')->period( $period );
+        $item = $this->model->query('products')->period( $period, array('bus'=>$bus_no) );
         if( empty($item) ) $this->error();
         // print_r($item); die;
 
@@ -45,8 +46,8 @@
         // print_r($promotion);die;
 
         // จำนวน ที่นั่ง ที่จองไปแล้ว
-        $seatBooked = $this->model->query('products')->seatBooked( $period );
-        $availableSeat = $item['per_qty_seats']-$seatBooked['booking'];
+        $seatBooked = $this->model->query('products')->seatBooked( $period, $bus_no );
+        $availableSeat = $item['bus_qty']-$seatBooked['booking'];
 
         $settings = array(
             'trave' => array(
@@ -60,27 +61,26 @@
         );
 
         $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
-        if( $DayOfGo > 33 ){
+        if( $DayOfGo > 31 ){ //32 day
             $settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
             $settings['fullPayment']['date'] = date('Y-m-d 18:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
-        }elseif ( $DayOfGo > 8 ){
-            $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("tomorrow"));
+        }elseif ( $DayOfGo > 13 ){ //14 - 31 day
+            $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
             $settings['deposit']['date'] = '';
             $settings['deposit']['price'] = 0;
-        }else{
-            if( date('H')>=19 ){ 
-                $settings['fullPayment']['date'] = date("Y-m-d 10:00", strtotime("tomorrow"));
-                $settings['deposit']['date'] = '-';
-                $settings['deposit']['price'] = 0;
-            }else if (date('H')<=6){
-                $settings['fullPayment']['date'] = date("Y-m-d 10:00");
-                $settings['deposit']['date'] = '-';
-                $settings['deposit']['price'] = 0;
-            }else{
-            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+4 hour")); // default 
-            $settings['deposit']['date'] = '-';
+        }elseif($DayOfGo >7){ //13 - 8 day
+            $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+1 day"));
             $settings['deposit']['price'] = 0;
-            }
+            $settings['deposit']['date'] = '';
+        }elseif($DayOfGo >3){ // 4 -7 day
+            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+12 hour"));
+            $settings['deposit']['price'] = 0;
+            $settings['deposit']['date'] = '';
+        }
+        else{
+            $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+            $settings['deposit']['price'] = 0;
+            $settings['deposit']['date'] = '';
         }
   
         /* CODE คำนวนวันเดินทาง 3 เงื่อนไขของ ใบเฟิร์น (มากกว่า 30 วัน || 8 - 30 วัน || ต่ำกว่า 8 วัน)
@@ -224,7 +224,7 @@
                     "agen_id"=>$this->me['id'], // login: id
                     "user_id"=>$_POST['sale_id'], // POST: sale_id
                     "per_id"=>$period, // period: id
-                    "bus_no"=> isset($_POST['bus']) ? $_POST['bus']: 1,  // POST: bus
+                    "bus_no"=> $bus_no,  // POST: bus
 
                     "book_total"=>$_SUM['subtotal'], // book_total // ยอดรวมรายการทั้งหมด
 

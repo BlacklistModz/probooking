@@ -137,4 +137,97 @@ class Payment_Model extends Model{
             return $fdata["agen_com_name"];
         } return "";
     }
+    public function getbyUser($id,$options=array()){
+        $data = array();
+
+        $table = "{$this->_objType} p
+        LEFT JOIN booking b ON b.book_id = p.book_id
+        LEFT JOIN user u ON b.user_id = u.user_id
+        LEFT JOIN period per ON per.per_id = b.per_id
+        LEFT JOIN series s ON per.ser_id = s.ser_id
+        LEFT JOIN agency a ON a.agen_id = b.agen_id
+        LEFT JOIN agency_company ac ON ac.agen_com_id = a.agency_company_id";
+
+        $options = array_merge(array(
+            'pager' => isset($_REQUEST['pager'])? $_REQUEST['pager']:1,
+            'limit' => isset($_REQUEST['limit'])? $_REQUEST['limit']:20,
+            'more' => true,
+
+            'sort' => isset($_REQUEST['sort'])? $_REQUEST['sort']: 'pay_id',
+            'dir' => isset($_REQUEST['dir'])? $_REQUEST['dir']: 'DESC',
+            
+            'q' => isset($_REQUEST['q'])? $_REQUEST['q']:null,
+
+        ), $options);
+
+        $where_str = '';
+        $where_arr = array();
+
+        if( !empty($options["status"]) ){
+            $status = '';
+            foreach($options["status"] as $val){
+                $status .= !empty($status) ? " OR " : "";
+                $status .= "p.status={$val}";
+            }
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "({$status})";
+        }
+        if( !empty($options["q"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "s.ser_code LIKE :q 
+                           OR b.invoice_code LIKE :q
+                           OR b.book_code LIKE :q
+                           OR u.user_fname LIKE :q
+                           OR u.user_lname LIKE :q";
+            $where_arr[":q"] = "%{$options["q"]}%";
+        }
+
+        $where_str .= !empty($where_str) ? " AND " : "";
+        $where_str .= "b.user_id=:id";
+        $where_arr[":id"] = $id;
+
+        $data['total'] = $this->db->count($table , $where_str, $where_arr);
+
+        $limit = $this->limited( $options['limit'], $options['pager'] );
+        if( !empty($options["unlimit"]) ) $limit = '';
+        $orderby = $this->orderby( $options['sort'], $options['dir'] );
+
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+        $results = $this->db->select("SELECT p.* 
+                                            ,b.status as book_status
+                                            , u.user_fname
+                                            , u.user_lname
+                                            , s.ser_code, b.invoice_code
+                                            , per.per_date_start
+                                            , per.per_date_end
+                                            , a.agen_fname
+                                            , a.agen_lname
+                                            , a.agen_nickname
+                                            , ac.agen_com_name      
+                                      FROM {$table} {$where_str} {$orderby} {$limit}", $where_arr);
+       
+      foreach($results as $key=>$value){
+
+        $date = date('d', strtotime($value['pay_date']));
+        $thaimonth = $this->fn->q('time')->month( date('n', strtotime($value['pay_date'])) );
+        $year = date('Y', strtotime($value['pay_date']))+543;
+        $DateStr = "{$date} {$thaimonth} {$year}";
+        
+         
+          $data['list'][$key] = $value;
+          
+          $data['list'][$key]['status'] = $this->getStatus($value['status']);
+          $data['list'][$key]['book_status'] = $this->query('booking')->getStatus($value["book_status"]);
+          $data['list'][$key]['period'] = $this->fn->q('time')->str_event_date($value["per_date_start"], $value["per_date_end"]); 
+          $data['list'][$key]['pay_date'] = $DateStr;
+          $data['list'][$key]['pay_time'] = str_replace(".",":",$value["pay_time"]);
+          $data['list'][$key]['currency'] = number_format($value['pay_received']).' บาท';
+      }
+
+    //   if( ($options['pager']*$options['limit']) >= $data['total'] ) $options['more'] = false;
+      $data['options'] = $options;
+      $data["total_page"] = ceil($data["total"] / $options["limit"]);
+
+      return $data;                                               
+    }
 }

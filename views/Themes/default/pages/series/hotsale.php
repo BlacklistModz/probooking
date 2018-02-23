@@ -68,7 +68,7 @@
 								<td class="tac">
 									<?=number_format($value["com_agency"])?> + <?=number_format($value["com_company_agency"])?>
 								</td>
-								<td class="tac"><?=number_format($value["qty_seats"])?></td>
+								<td class="tac"><?=number_format($value["bus_qty"])?></td>
 								<td class="tac"><?=number_format($value["booking"]["booking"])?></td>
 								<td class="tac" style="background-color: #43d967;">
 										<?php 
@@ -106,14 +106,14 @@
 								<td class="tac">
 									<?php if ($value['balance']<=0){ 
                                 		if( $value['booking']['payed'] < $value['seats'] ){
-                                			echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-orange btn-submit">W/L</a>';
+                                			echo '<a href="'.URL.'booking/register/'.$value['id'].'/'.$value["bus_no"].'" class="btn btn-orange btn-submit">W/L</a>';
                                 		}
                                 		else{
                                 			echo '<span class="btn btn-danger disabled">เต็ม</span>';
                                 		}
                                     } else {
                                     	if( $value['status'] == 1  ){
-                                    		echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-success btn-submit">จอง</a>';
+                                    		echo '<a href="'.URL.'booking/register/'.$value['id'].'/'.$value["bus_no"].'" class="btn btn-success btn-submit">จอง</a>';
                                     	}
                                     		else{
                                     		echo '<span class="btn btn-danger disabled"><i class="icon-lock"></i></span>';

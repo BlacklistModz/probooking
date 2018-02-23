@@ -25,7 +25,7 @@
 				<td class="price"><?=number_format($value['price_1'])?>.-</td>
 
 				<?php if ( !empty($this->me) ) { ?>
-				<td class="qty"><?=number_format($value['seats'])?></td>
+				<td class="qty"><?=number_format($value['bus_qty'])?></td>
 				<?php } ?>
                 <td class="qty fwb">
                 <?php
@@ -38,7 +38,7 @@
                 // }
                 if ($value['balance']<=0){ 
 
-                	if( $value['booking']['payed'] < $value['seats'] ){
+                	if( $value['booking']['payed'] < $value['bus_qty'] ){
 
                 		echo $value['balance']<=0  ? '<span class="">W/L</span>': number_format($value['balance']);
                 	}
@@ -68,9 +68,9 @@
 
             		<?php if ($value['balance']<=0){ 
 
-            			if( $value['booking']['payed'] < $value['seats'] ){
+            			if( $value['booking']['payed'] < $value['bus_qty'] ){
 
-            				echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-orange btn-submit">W/L</a>';
+            				echo '<a href="'.URL.'booking/register/'.$value['id'].'/'.$value["bus_no"].'" class="btn btn-orange btn-submit">W/L</a>';
 						}
 							
             			else{
@@ -82,7 +82,7 @@
                 		
                 		// echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-success btn-submit">จอง</a>';
                     	if( $value['status'] == 1  ){
-                    		echo '<a href="'.URL.'booking/register/'.$value['id'].'" class="btn btn-success btn-submit">จอง</a>';
+                    		echo '<a href="'.URL.'booking/register/'.$value['id'].'/'.$value["bus_no"].'" class="btn btn-success btn-submit">จอง</a>';
                     	}
                     	else{
                     		echo '<span class="btn btn-danger disabled">เต็ม</span>';

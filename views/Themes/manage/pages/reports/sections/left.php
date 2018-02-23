@@ -1,7 +1,13 @@
-<div class="settings-left" role="left" data-width="260">
+<div class="profile-left" role="left" data-width="260">
+	<div class="profile-left-header" role="leftHeader">
 
+		<div class="profile-left-title">
+			<h2><i class="icon-line-chart"></i> Reports</h2>
+			<!-- <div class="fsm">แก้ไขข้อมูลล่าสุด: <abbr title="วันพฤหัสษบดีที่ 22 ก.พ. 2561  เวลา 02:52 น." data-utime="1519267944" class="timestamp livetimestamp">24 นาทีที่แล้ว</abbr></div> -->
+		</div>
+	</div>
 	<!-- menu -->
-	<div class="settings-nav">
+	<div class="profile-left-details form-insert-people" style="padding-top: 10px;">
 	<?php foreach ($menu as $key => $value) { ?>
 		<div>
 			<a class="settings-nav-header-link<?php 

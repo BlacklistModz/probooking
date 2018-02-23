@@ -28,9 +28,18 @@ class Series extends Controller {
     }
     public function hotsale(){
         if( empty($this->me) ) $this->error();
+
+        $this->view->js('jquery/jquery-ui.min');
+
         $this->view->setPage('title', 'โปรดันขาย');
         $this->view->setData('country', $this->model->query('products')->categoryList());
         $this->view->setData('results', $this->model->query('products')->hotsaleList());
         $this->view->render("series/hotsale");
+    }
+    public function tester(){
+        $this->view->css('jquery-ui');
+        $this->view->js('jquery/jquery-ui.min');
+
+        $this->view->render('series/tester');
     }
 }

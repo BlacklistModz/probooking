@@ -1,9 +1,9 @@
 <?php
 // ที่นั่งที่ยังว่างอยู่
-$availableSeat = $this->item['per_qty_seats']-$this->seatBooked['booking'];
+$availableSeat = $this->item['bus_qty']-$this->seatBooked['booking'];
 
 
-$selectSeat = $availableSeat <= 0 ? $this->item['per_qty_seats']: $availableSeat;
+$selectSeat = $availableSeat <= 0 ? $this->item['bus_qty']: $availableSeat;
 $numberArray = array();
 for ($i=1; $i <= $selectSeat; $i++) { 
     $numberArray[] = array('id'=>$i, 'name' => $i);
@@ -98,6 +98,7 @@ if( $this->promotion > 0 ){
             <!-- form -->
             <form class="card js-submit-form" method="POST" action="<?=URL?>booking/register/">
                 <input type="hidden" name="period" value="<?=$this->item['per_id']?>" autocomplete="off">
+                <input type="hidden" name="bus_no" value="<?=$this->item['bus_no']?>" autocomplete="off">
 
                 <header class="mbl clearfix">
                     <h1><a style="color: #000" href="<?=URL?>tour/<?=$this->item['ser_id']?>"><?=$this->item['name']?></a> จองทัวร์</h1>

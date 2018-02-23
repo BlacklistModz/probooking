@@ -76,8 +76,15 @@
 									<td class="tac">
 										<?=number_format($period["com_company_agency"])?> + <?=number_format($period["com_agency"])?>
 									</td>
-									<td class="tac"><?=number_format($period["qty_seats"])?></td>
-									<td class="tac"><?=number_format($period["booking"]["booking"])?></td>
+									<td class="tac"><?=number_format($period["bus_qty"])?></td>
+									<td class="tac"><?php 
+									if( $period["status"] != 1 && $period["status"] != 2 ){
+										echo empty($period["booking"]["booking"]) ? "-" : number_format($period["booking"]["booking"]);
+									}
+									else{
+										echo number_format($period["booking"]["booking"]);
+									}
+									?></td>
 									<td class="tac" style="background-color: #43d967;">
 										<?php 
 										if ($period['balance']<=0){ 
@@ -116,7 +123,7 @@
 
                                 			if( $period['booking']['payed'] < $period['seats'] ){
 
-                                				echo '<a href="'.URL.'booking/register/'.$period['id'].'" class="btn btn-orange btn-submit">W/L</a>';
+                                				echo '<a href="'.URL.'booking/register/'.$period['id'].'/'.$period['bus_no'].'" class="btn btn-orange btn-submit">W/L</a>';
                                 			}
                                 			else{
                                 				echo '<span class="btn btn-danger disabled">เต็ม</span>';
@@ -126,7 +133,7 @@
                                         } else {
                                     		
                                     		if( $period['status'] == 1  ){
-                                    			echo '<a href="'.URL.'booking/register/'.$period['id'].'" class="btn btn-success btn-submit">จอง</a>';
+                                    			echo '<a href="'.URL.'booking/register/'.$period['id'].'/'.$period['bus_no'].'" class="btn btn-success btn-submit">จอง</a>';
                                     		}
                                     		else{
                                     			echo '<span class="btn btn-danger disabled"><i class="icon-lock"></i></span>';
@@ -136,7 +143,7 @@
 									</td>
 								</tr>
 								<?php 
-								if( ($row-1)<= 10 && $i==($row-2) ){
+								if( ($row-1)<= 9 && $i==($row-2) ){
 									echo '<tr>
 												<td colspan="13"></td>
 										  </tr>';

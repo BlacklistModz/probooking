@@ -29,3 +29,10 @@ if( !empty($sub) ){
 	$this->count_nav+=count($sub);
 	$menu[] = array('text' => 'Recevied Reports', 'url' => $this->pageURL.'reports/recevied', 'sub'=>$sub);
 }
+
+$sub = array();
+$sub[] = array('text'=>'Monitor', 'key'=>'monitor', 'url'=>$this->pageURL.'reports/monitor');
+if( !empty($sub) ){
+	$this->count_nav+=count($sub);
+	$menu[] = array('text'=>'Recevied Monitor', 'url'=>$this->pageURL.'reports/monitor', 'sub'=>$sub);
+}

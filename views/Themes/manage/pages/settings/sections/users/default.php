@@ -63,14 +63,29 @@ $url = URL.'user/';
 </div></div>
 
 <div class="SettingCol-main">
-	<div class="SettingCol-tableHeader"><div class="SettingCol-contentInner">
-		<table class="settings-table admin"><thead><tr>
-			<th class="name" data-col="0">Full Name</th>
-			<th class="email" data-col="1"></th>
-			<th class="status_th" data-col="2"></th>
-			<th class="actions" data-col="3">Action</th>
-		</tr></thead></table>
-	</div></div>
+	<div class="SettingCol-tableHeader">
+		<div class="SettingCol-contentInner">
+			<table class="table-bordered admin" width="100%">
+				<thead>
+					<tr>
+						<th width="2%" class="pam">#</th>
+						<th width="8%">Booking No.</th>
+						<th width="5%">จำนวน</th>
+						<th width="5%">ยอดรวม</th>
+						<th width="5%" style="background-color: #51c6ea; color:#fff;" class="fwb">ส่วนลด</th>
+						<th width="5%" style="background-color: #43d967; color:#fff;">ยอดสุทธิ</th>
+						<th width="10%">วันที่จอง</th>
+						<th width="10%" style="background-color: #f47f7f; color:#fff;">วันหมดอายุ</th>
+						<th width="15%">ชื่อบริษัท</th>
+						<th width="10%">Booking By</th>
+						<th width="10%">Sale Contact</th>
+						<th width="10%" style="background-color: #2b957a; color:#fff;">Amount Receive</th>
+						<th width="5%"></th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
 	<div class="SettingCol-contentInner">
 	<div class="SettingCol-tableBody"></div>
 	<div class="SettingCol-tableEmpty empty">

@@ -67,13 +67,13 @@ class Agency_Model extends Model {
         }
         if( !empty($options["q"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";
-            $where_str .= "{$this->_cutNamefield}user_name LIKE :q
+            $where_str .= "({$this->_cutNamefield}user_name LIKE :q
                            OR {$this->_cutNamefield}fname LIKE :q
                            OR {$this->_cutNamefield}lname LIKE :q
                            OR {$this->_cutNamefield}nickname LIKE :q
                            OR {$this->_cutNamefield}email LIKE :q
                            OR {$this->_cutNamefield}tel LIKE :q
-                           OR {$this->_cutNamefield}com_name LIKE :q";
+                           OR {$this->_cutNamefield}com_name LIKE :q)";
             $where_arr[":q"] = "%{$options["q"]}%";
         }
 

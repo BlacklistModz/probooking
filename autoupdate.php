@@ -89,7 +89,7 @@ if ($conn->query($sql) === TRUE) {
                 if( $BalanceSeats > 0 ){
                 	while($bw_rs = $bw_query->fetch_assoc()){
                 		if( $bw_rs["qty"] <= $BalanceSeats ){
-                			$up_book = "UPDATE booking SET status='00',book_on_wl='1',book_log='update by cancel booking' WHERE book_id={$bw_rs["book_id"]}";
+                			$up_book = "UPDATE booking SET status='00',book_on_wl='1',book_log='update by auto system' WHERE book_id={$bw_rs["book_id"]}";
                 			$conn->query($up_book);
 
                 			$BalanceSeats -= $bw_rs["qty"]; // CALCULATE
@@ -139,29 +139,27 @@ if ($conn->query($sql) === TRUE) {
 
 				/* SET DAY OF GO */
 				$DayOfGo = DateDiff(date("Y-m-d"), date("Y-m-d", strtotime($_rs["per_date_start"])));
-				if( $DayOfGo > 33 ){
-					$deposit_date = date("Y-m-d 18:00:00", strtotime("+2 day"));
-					$full_date = date("Y-m-d 18:00:00", strtotime("-30 day", strtotime($_rs["per_date_start"])));
-				}
-				elseif( $DayOfGo > 8 ){
-					$deposit_date = "";
-					$deposit_price = 0;
-					$full_date = date("Y-m-d 18:00:00", strtotime("tomorrow"));
+				
+				if( $DayOfGo > 31 ){ //32 day
+					$settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+					$settings['fullPayment']['date'] = date('Y-m-d 18:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+				}elseif ( $DayOfGo > 13 ){ //14 - 31 day
+					$settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+					$settings['deposit']['date'] = '';
+					$settings['deposit']['price'] = 0;
+				}elseif($DayOfGo >7){ //13 - 8 day
+					$settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+1 day"));
+					$settings['deposit']['price'] = 0;
+					$settings['deposit']['date'] = '';
+				}elseif($DayOfGo >3){ // 4 -7 day
+					$settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+12 hour"));
+					$settings['deposit']['price'] = 0;
+					$settings['deposit']['date'] = '';
 				}
 				else{
-					if(date('H')>=19){
-						$full_date = date("Y-m-d 10:00", strtotime("tomorrow"));
-						$deposit_date = "";
-						$deposit_price = 0;
-					}else if(date('H')<=6){
-						$full_date = date("Y-m-d 10:00");
-						$deposit_date = "";
-						$deposit_price = 0;
-					}else{
-					$full_date = date("Y-m-d H:i", strtotime("+4 hour"));
-					$deposit_date = "";
-					$deposit_price = 0;
-					}
+					$settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+					$settings['deposit']['price'] = 0;
+					$settings['deposit']['date'] = '';
 				}
 
 				/* จำนวนคนจองทั้งหมด (ตัด Waiting กับ ยกเลิก) */
@@ -177,7 +175,7 @@ if ($conn->query($sql) === TRUE) {
                 		$datenow = date("d/m/Y H:i:s");
                 		if( $w_rs["qty"] <= $BalanceSeats ){
                 			/* SET NEW DUE DATE */
-                			$data = "status='00', book_due_date_full_payment='{$full_date}', book_log='update by cancel booking', book_on_wl='1'";
+                			$data = "status='00', book_due_date_full_payment='{$full_date}', book_log='update by auto system', book_on_wl='1'";
                 			if( !empty($deposit_date) ){
                 				$data .= !empty($data) ? "," : "";
                 				$data .= "book_due_date_deposit='{$deposit_date}'";
@@ -200,7 +198,7 @@ if ($conn->query($sql) === TRUE) {
                 			if( $BalanceSeats > 0 ){
 
                 				/* SET NEW DUE DATE */
-                				$data = "status='50', book_due_date_full_payment='{$full_date}', book_log='update by cancel booking', book_on_wl='1'";
+                				$data = "status='50', book_due_date_full_payment='{$full_date}', book_log='update by auto system', book_on_wl='1'";
                 				if( !empty($deposit_date) ){
                 					$data .= !empty($data) ? "," : "";
                 					$data .= "book_due_date_deposit='{$deposit_date}'";

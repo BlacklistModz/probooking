@@ -17,6 +17,16 @@ echo '<div class="navigation-main-header"><div class="anchor clearfix">'.$image.
 
 echo '<div class="navigation-main-content">';
 
+$booking[] = array('key'=>'booking', 'text'=>'จัดการการจองทัวร์', 'link'=>$this->pageURL.'booking', 'icon'=>'book');
+if( !empty($booking) ){
+	echo $this->fn->manage_nav($booking, $this->getPage('on'));
+}
+
+$product[] = array('key'=>'series', 'text'=>'ซีรีย์ทัวร์', 'link'=>$this->pageURL.'series', 'icon'=>'calendar');
+if( !empty($product) ){
+	echo $this->fn->manage_nav($product, $this->getPage('on'));
+}
+
 $agency[] = array('key'=>'agency_company', 'text'=>'Agent Profile', 'link'=>$this->pageURL.'agency_company', 'icon'=>'building-o');
 $agency[] = array('key'=>'agency', 'text'=>'Agent Account', 'link'=>$this->pageURL.'agency', 'icon'=>'users');
 if( !empty($agency) ){
