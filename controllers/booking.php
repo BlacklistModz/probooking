@@ -579,14 +579,18 @@
     public function payRejected($id=null){
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
 
-            if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
-            $item = $this->model->query('payment')->get($id);
+        if( empty($this->me) || empty($id) || $this->format != 'json' ) $this->error();
+        $item = $this->model->query('payment')->get($id);
 
-            if( empty($item) ) $this->error();
+        if( empty($item) ) $this->error();
 
-            $this->view->setData('item', $item);
-            $this->view->render('forms/booking/payrejected');
-        
+        $this->view->setData('item', $item);
+        $this->view->render('forms/booking/payrejected');
     }
 
+    /* JSON ZONE */
+    public function listsAgency( $com_id=null ){
+        if( empty($com_id) ) $this->error();
+        echo json_encode( $this->model->query("agency")->lists( array("company"=>$com_id, "status"=>1) ));
+    }
 }

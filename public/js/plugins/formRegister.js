@@ -37,6 +37,10 @@ if ( typeof Object.create !== 'function' ) {
 
             self.currTap = self.$elem.find(".js-current-step li.active").find('a').data('target').substr(5); // get current state
 
+            self.$geo = self.$elem.find('#agen_com_geo');
+            self.$province = self.$elem.find("#agen_com_province");
+            self.$amphur = self.$elem.find("#agen_com_amphur");
+
             self.setMenuCompany();
             self.setElem();
             self.Events();
@@ -177,6 +181,13 @@ if ( typeof Object.create !== 'function' ) {
 
             $('html').on('click', function() {
                 self.hideCompany();
+            });
+
+            self.$geo.change(function(){
+                self.setProvince( $(this).val() );
+            });
+            self.$province.change(function(){
+                self.setAmphur( $(this).val() );
             });
         },
         setTap: function( tap ){
@@ -369,9 +380,15 @@ if ( typeof Object.create !== 'function' ) {
                 , $('<input>', { type: 'hidden', class: 'hiddenInput', value:data.com_id, autocomplete:'off', name: 'agency_company_id' })
                 );
 
+            self.setProvince( data.com_geo, data.com_province );
+            self.setAmphur( data.com_province, data.com_amphur );
+
             self.$elem.find('input#agen_com_name').val( data.com_name ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_address1').val( data.com_address1 ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_address2').val( data.com_address2 ).addClass('disabled').prop('disabled', true);
+            self.$geo.val( data.com_geo ).addClass("disabled").prop("disabled", true);
+            self.$province.addClass("disabled").prop("disabled", true);
+            self.$amphur.addClass("disabled").prop("disabled", true);
             self.$elem.find('input#agen_com_tel').val( data.com_tel ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_fax').val( data.com_fax ).addClass('disabled').prop('disabled', true);
             self.$elem.find('input#agen_com_ttt_on').val( data.com_ttt_on ).addClass('disabled').prop('disabled', true);
@@ -388,6 +405,10 @@ if ( typeof Object.create !== 'function' ) {
                 self.$elem.find('input#agen_com_ttt_on').val( '' ).removeClass('disabled').prop('disabled', false);
                 self.$elem.find('input#agen_com_email').val( '' ).removeClass('disabled').prop('disabled', false);
                 self.$company.prop('disabled', false).focus().parent().removeClass('active').find('.overlay').empty();
+
+                self.$geo.val( '' ).removeClass("disabled").prop("disabled", false);
+                self.$province.removeClass("disabled").prop("disabled", false);
+                self.$amphur.removeClass("disabled").prop("disabled", false);
             });
         },
         search: function ( text ) {
@@ -480,6 +501,34 @@ if ( typeof Object.create !== 'function' ) {
                     }
                 }
             });
+        },
+        setProvince: function( geo, province=null ){
+            var self = this;
+            $.get( Event.URL + 'agency_company/listsProvince/'+geo, function(res){
+                self.$province.empty();
+                self.$province.append( $('<option>', {value:"", text:"--- เลือกจังหวัด ---"}) );
+                $.each( res, function(i, obj) {
+                    var li = $('<option>', {value:obj.id, text:obj.name, 'data-id':obj.id});
+                    if( province == obj.id ){
+                        li.prop('selected', true);
+                    }
+                    self.$province.append( li );
+                });
+            },'json' );
+        },
+        setAmphur: function( province, amphur=null ){
+            var self = this;
+            $.get( Event.URL + 'agency_company/listsAmphur/'+province, function(res){
+                self.$amphur.empty();
+                self.$amphur.append( $('<option>', {value:"", text:"--- เลือกเขต/อำเภอ ---"}) );
+                $.each( res, function(i, obj){
+                    var li = $('<option>', {value:obj.id, text:obj.name, 'data-id':obj.id});
+                    if( amphur == obj.id ){
+                        li.prop('selected', true);
+                    }
+                    self.$amphur.append( li );
+                });
+            },'json' );
         }
     }
     $.fn.formRegister = function( options ) {

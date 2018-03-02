@@ -42,6 +42,33 @@ $formCom    ->field("agen_com_address2")
             ->attr("style", "color:black;")
             ->value("");
 
+$formCom    ->field("agen_com_geo")
+            ->label("ภาค/โซน <span style='color:red'>*</span>")
+            ->name("company[com_geo]")
+            ->addClass('inputtext')
+            ->autocomplete('off')
+            ->attr("style", "color:black;")
+            ->select( $this->geo, "id", "name", "-- เลือกภาค --" )
+            ->value("");
+
+$formCom    ->field("agen_com_province")
+            ->label("จังหวัด <span style='color:red'>*</span>")
+            ->name("company[com_province]")
+            ->addClass('inputtext')
+            ->autocomplete('off')
+            ->attr('style', 'color:black;')
+            ->select( array() )
+            ->value("");
+
+$formCom    ->field("agen_com_amphur")
+            ->label("เขต/อำเภอ <span style='color:red'>*</span>")
+            ->name("company[com_amphur]")
+            ->addClass("inputtext")
+            ->autocomplete("off")
+            ->attr("style", "color:black;")
+            ->select( array() )
+            ->value("");
+
 $formCom 	->field("agen_com_tel")
             ->label("เบอร์โทร <span style='color:red'>*</span>")
             ->name('company[com_tel]')

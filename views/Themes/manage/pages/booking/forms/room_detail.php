@@ -1,15 +1,16 @@
 <div class="mts">
-	<div class="uiBoxWhite pal clearfix">
-		<h3>FULL NAME</h3>
+	<?php foreach ($this->booking["lists"] as $key => $value) { ?>
+	<div class="uiBoxWhite pal clearfix mts">
+		<h3><?=$value["user_fname"]?> <?=$value["user_lname"]?></h3>
 		<ul class="lfloat mll mts">
 			<li class="mt">
-				<span class="fwb">INVOICE NO :</span>
+				<span class="fwb">INVOICE NO :</span> <?=$value["invoice_code"]?>
 			</li>
 			<li class="mt">
-				<span class="fwb">Agent booking :</span>
+				<span class="fwb">Agent booking :</span> <?=$value["agen_com_name"]?>
 			</li>
 			<li class="mt">
-				<span class="fwb">Sale Agent booking : </span>
+				<span class="fwb">Sale Agent booking : </span> <?=$value["agen_fname"]?> <?=$value["agen_lname"]?>
 			</li>
 			<li class="mt">
 				<span class="fwb">Customer Name :</span>
@@ -33,4 +34,5 @@
 			</div>
 		</div>
 	</div>
+	<?php } ?>
 </div>

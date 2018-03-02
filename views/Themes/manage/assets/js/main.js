@@ -2404,7 +2404,7 @@ if ( typeof Object.create !== 'function' ) {
 		},
 		setAmphur: function(){
 			var self = this;
-			var province = self.$province.val() || self.currProvince;
+			var province = self.$province.val();
 			$.get( Event.URL + 'agency_company/listsAmphur/'+province, function(res){
 				self.$amphur.empty();
 				self.$amphur.append( $('<option>', {value:"", text:"--- เลือกเขต/อำเภอ ---"}) );
@@ -2426,6 +2426,247 @@ if ( typeof Object.create !== 'function' ) {
 		});
 	};
 	$.fn.formAgencyCompany.options = {};
+
+	var bookingForm = {
+		init: function(options, elem) {
+			var self = this;
+			self.elem = elem;
+			self.$elem = $(elem);
+
+			self.options = $.extend( {}, $.fn.bookingForm.options, options );
+
+			self.deposit = self.options.deposit;
+			self.$company = self.$elem.find("#sgent");
+			self.currAgency = self.options.agen_id;
+			self.$agency = self.$elem.find("#sale");
+			self.currDiscount = self.options.discount;
+
+			self.$discount = self.$elem.find("[name=book_discount]");
+
+			self.$listsItem = self.$elem.find("[role=listsItem]");
+
+			self.setElem();
+			self.Event();
+			self.calculate();
+		},
+		setElem: function(){
+			var self = this;
+
+			if( self.options.items.length==0 ){
+				self.getItem();
+			}else{
+				$.each( self.options.items, function (i, obj) {
+					self.getItem(obj);
+				} );
+			}
+
+			$.each( self.$elem.find('[data-action=selector]'), function(){
+				var key = $(this).attr('id'),
+				val = $(this).val() || 0;
+				self.$elem.find('[data-summary-id='+ key +']').find('[data-qty]').attr('data-qty', val).text( val );
+			} );
+
+			if( self.$company.val() != '' ){
+				self.setAgency();
+			}
+
+			self.$company.change(function(){
+				self.setAgency();
+			});
+		},
+		Event: function(){
+			var self = this;
+			self.$elem.find('[data-action=selector]').change(function() {
+				var key = $(this).attr('id'),
+				val = $(this).val() || 0;
+				self.$elem.find('[data-summary-id='+ key +']').find('[data-qty]').attr('data-qty', val).text( val );
+				self.$discount.val( 0 );
+				self.calculate();
+			});
+
+			self.$elem.find(".js-add-item").click(function(){
+				self.$listsItem.append( self.setItem( {} ) );
+				self.sortItem();
+			});
+			self.$elem.delegate(".js-remove", "click", function(){
+				var tr = $(this).closest("tr");
+
+				if( self.$listsItem.find('tr').length==1 ){
+					tr.find(':input').val('');
+					tr.find('.js-total').empty();
+					tr.find(':input').first().focus();
+				}
+				else{
+					tr.remove();
+				}
+
+				self.sortItem();
+				self.calculate();
+			});
+			self.$elem.delegate(".js-price", "change", function(){
+				var tr = $(this).closest("tr");
+				self.summaryBox( tr );
+				self.calculate();
+			});
+			self.$elem.delegate(".js-qty", "change", function(){
+				var tr = $(this).closest("tr");
+				self.summaryBox( tr );
+				self.calculate();
+			});
+			self.$elem.find("input[name=book_discount]").change(function(){
+				self.calculate();
+			});
+		},
+		calculate: function(){
+			var self = this;
+
+			var comQty = 0;
+			$.each( self.$elem.find('.tablePrice .sum-qty'), function () {
+				comQty += parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
+			} );
+
+			var disQty = 0;
+			$.each( self.$elem.find('.tablePrice .sum-dis'), function() {
+				disQty += parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
+			} );
+
+			self.$elem.find('[data-summary-id=agency_com], [data-summary-id=sales_com]').find('[data-qty]').attr('data-qty', comQty).text( comQty );
+			self.$elem.find('[data-summary-id=discount], [data-summary-id=promotion]').find('[data-qty]').attr('data-qty', disQty).text( disQty );
+
+			var _deposit = self.deposit*comQty;
+			self.$elem.find('[data-deposit]').text( PHP.number_format(_deposit) );
+
+			var income = 0;
+			var discount_extra = 0;
+			var discount = 0;
+			var input_discount = parseInt( self.$discount.val() ) || 0;
+			$.each( self.$elem.find('[data-summary=item]'), function(index, el) {
+
+				var type = $(this).attr('data-type');
+				var price = parseInt( $(this).find('[data-price]').attr('data-price') ) || 0;
+				var qty = parseInt( $(this).find('[data-qty]').attr('data-qty') ) || 0;
+				var total = price*qty;
+
+				if( type=='discount' || type=='discount_extra' ){
+					discount+=total;
+					if( type == 'discount_extra' ){
+						discount_extra += total;
+					}
+				}
+				else{
+					income += total;
+				}
+
+				$(this).find('[data-total]').text( PHP.number_format(total) );
+			});
+
+			if( input_discount > 0 ){
+				discount += (input_discount - discount_extra);
+				discount_extra += (input_discount - discount_extra);
+			}
+
+			var subtotal = income-discount;
+			if(subtotal < 0) subtotal = 0;
+
+			$.each( self.$listsItem.find("tr"), function(){
+				var ex_total = $(this).find(".js-input-total").val() || 0;
+				subtotal += parseInt(ex_total);
+			});
+
+			self.$elem.find('[data-summary=subtotal]').text( PHP.number_format(subtotal) );
+			self.$elem.find('[data-fullpay]').text( PHP.number_format(subtotal-_deposit) );
+
+			/* SET DISCOUNT */
+			self.$elem.find('[name=book_discount]').val( discount_extra );
+		},
+		setAgency: function(){
+			var self = this;
+			var company = self.$company.val();
+
+			$.get( Event.URL + 'booking/listsAgency/' + company, function(res){
+				self.$agency.empty();
+				self.$agency.append( $("<option>", {value:"", text:"-- เลือกเซลล์ --"}) );
+				$.each( res.lists, function(i,obj){
+					var li = $("<option>", {value:obj.id, text:obj.fullname});
+
+					if( self.currAgency == obj.id ){
+						li.prop("selected", true);
+					}
+
+					self.$agency.append( li );
+				});
+			}, 'json' );
+		},
+		getItem: function (data) {
+			var self = this;
+
+			self.$listsItem.append( self.setItem( data || {} ) );
+			self.sortItem();
+		},
+		setItem: function( data ){
+			var self = this;
+
+			$tr = $('<tr>', {style:""});
+			$tr.append(
+				$('<td>', {class: "no tac"}),
+				$('<td>').append( 
+					$("<input>", {type:"text", name:"book_list[name][]", class:"inputtext", style:"width: 100%;"}) 
+				),
+				$('<td>').append(
+					$("<input>", {type:"text", name:"book_list[price][]", class:"inputtext js-price tac", style:"width: 100%;"})
+				),
+				$('<td>').append(
+					$("<input>", {type:"text", name:"book_list[qty][]", class:"inputtext js-qty tac", style:"width: 100%;"})
+				),
+				$('<td>', {class:"tac"}).append(
+					$("<span>", {class:"js-total"}),
+					$("<input>", {type:"hidden", name:"book_list[total][]", class:"inputtext js-input-total", style:"width: 100%;"})
+				),
+				$('<td>', {class:"tac"}).append(
+					$("<span>", {class:"gbtn"}).append(
+						$("<a>", {class:"btn btn-red btn-no-padding js-remove", style:"color:#fff;"}).append( $("<i>", {class:"icon-remove"}) )
+					)
+				)
+			);
+
+			return $tr;
+		},
+		sortItem: function(){
+			var self = this;
+
+			var c = 0;
+			$.each(self.$listsItem.find('tr'), function() {
+				var $item = $(this);
+				c++;
+				$item.find('.no').text( c+'.' );
+			});
+		},
+		summaryBox: function( box ){
+			var self = this;
+
+			var price = box.find('.js-price').val();
+			var qty = box.find('.js-qty').val();
+			var total = box.find(".js-total");
+			var input_total = box.find('.js-input-total');
+
+			qty = parseInt(qty) || 0;
+			price = parseInt(price) || 0;
+
+			$total = parseInt(qty) * parseInt(price);
+			total.text( PHP.number_format( $total ) );
+			input_total.val( $total );
+
+			// self.setExtraPrice();
+		}
+	}
+	$.fn.bookingForm = function( options ) {
+		return this.each(function() {
+			var $this = Object.create( bookingForm );
+			$this.init( options, this );
+			$.data( this, 'bookingForm', $this );
+		});
+	};
+	$.fn.bookingForm.options = {};
 	
 })( jQuery, window, document );
 

@@ -27,6 +27,7 @@ class Booking_Model extends Model {
                        , per.per_date_end
 
                        , ac.agen_com_name
+                       , ac.agen_com_id
 
                        , u.user_fname
                        , u.user_lname
@@ -182,6 +183,9 @@ class Booking_Model extends Model {
         }
         if( !empty($options["passport"]) ){
             $data["passport"] = $this->listsPassport($data["book_id"]);
+        }
+        if( !empty($options["room"]) ){
+            $data["room"] = $this->listsRoom($data["book_code"]);
         }
 
         if( !empty($data['per_url_pdf']) && $data['per_url_pdf'] != 'undefined' ){
@@ -407,7 +411,6 @@ class Booking_Model extends Model {
      public function unsetPassport($id){
         $this->db->delete("passport", "pass_id={$id}");
     }
-    
     public function getPromotion( $date ){
         $sth = $this->db->prepare("SELECT COALESCE(SUM(pro_discount),0) AS discount FROM promotions WHERE (pro_start_date <= :datenow AND pro_end_date >= :datenow) AND pro_status='enabled' LIMIT 1");
         $sth->execute( array( ':datenow' => $date ) );
@@ -417,5 +420,43 @@ class Booking_Model extends Model {
         if( $sth->rowCount()==1 ){
             return $fdata["discount"];
         } return 0;
+    }
+
+    /* ROOM DETAIL */
+    private $_roomSelect = "*";
+    private $_roomTable = "room_detail";
+    public function listsRoom( $code, $options=array() ){
+
+        $where_str = "";
+        $where_arr = array();
+
+        /* options zone */
+
+        /* condition */
+        $where_str .= !empty($where_str) ? " AND " : "";
+        $where_str .= "book_code=:code";
+        $where_arr[":code"] = $code;
+
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+
+        $sql = "SELECT {$this->_roomSelect} FROM {$this->_roomTable} {$where_str}";
+        return $this->buildFragRoom( $this->db->select($sql, $where_arr) );
+    }
+    public function buildFragRoom( $results, $options=array() ){
+        $data = array();
+        foreach ($results as $key => $value) {
+            if( empty($value) ) continue;
+            $data[] = $this->convertRoom( $value, $options );
+        }
+        return $data;
+    }
+    public function convertRoom( $data, $options=array() ){
+        $data = $this->_cutFirstFieldName("room_", $value);
+        return $data;
+    }
+
+    /* AGENCY */
+    public function companyLists(){
+        return $this->db->select("SELECT agen_com_id AS id, agen_com_name AS name FROM agency_company WHERE status=1 ORDER BY agen_com_name ASC");
     }
 }

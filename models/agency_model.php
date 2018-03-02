@@ -60,10 +60,12 @@ class Agency_Model extends Model {
             $where_str .= "agency_company_id=:company";
             $where_arr[":company"] = $options["company"];
         }
-        if( $options["status"] != null ){
-            $where_str .= !empty($where_str) ? " AND " : "";
-            $where_str .= "agency.status=:status";
-            $where_arr[":status"] = $options["status"];
+        if( isset($options["status"]) ){
+            if( $options["status"] != null ){
+                $where_str .= !empty($where_str) ? " AND " : "";
+                $where_str .= "agency.status=:status";
+                $where_arr[":status"] = $options["status"];
+            }
         }
         if( !empty($options["q"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";

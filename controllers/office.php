@@ -4,6 +4,9 @@ class Office extends Controller {
 
     public function __construct() {
         parent::__construct();
+
+        $this->view ->js("jquery/jquery-selector.min")
+                    ->css('jquery-selector');
     }
 
     public function index(){
@@ -229,30 +232,106 @@ class Office extends Controller {
         $this->view->render( $render );
     }
 
-    public function booking($section=null, $id=null){
+    public function booking($sections=null, $id=null){
         $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
 
         $this->view->setPage('on', 'booking');
         $this->view->setPage('title', 'จัดการการจองทัวร์');
 
-        if( !empty($section) ){
+        if( !empty($sections) ){
+            /* SET ITEM */
             if( !empty($id) ){
                 $item = $this->model->query('booking')->get($id);
                 if( empty($item) ) $this->error();
+                $this->view->setData("item", $item);
+
+                $period = $item["per_id"];
+                $bus = $item["bus_no"];
+            }
+            else{
+                $period = isset($_REQUEST["period"]) ? $_REQUEST["period"] : null;
+                $bus = isset($_REQUEST["bus"]) ? $_REQUEST["bus"] : null;
             }
 
-            if( $section == "basic" ){
+            /* SET PERIOD */
+            if( empty($period) || empty($bus) ) $this->error();
+            $per = $this->model->query('products')->period( $period, array('bus'=>$bus) );
+            if( empty($per) ) $this->error();
+            $this->view->setData('period', $per);
+
+            /* SET SECTIONS */
+            if( empty($sections) ) $sections = "basic";
+            $this->view->setData("sections", $sections);
+
+            if( $sections == "basic" ){
+                $this->view->setPage('title', 'รายละเอียดการจองทัวร์');
+                $this->view->setData('busList', $this->model->query("products")->busList( $period ));
+
+                // จำนวน ที่นั่ง ที่จองไปแล้ว
+                $seatBooked = $this->model->query('products')->seatBooked( $period, $bus );
+                $availableSeat = $per['bus_qty']-$seatBooked['booking'];
+
+                $settings = array(
+                    'trave' => array(
+                        'date' => date('Y-m-d', strtotime($per['per_date_start']))
+                    ),
+                    'deposit' => array(
+                        'date' => date('Y-m-d'),
+                        'price' => $per['ser_deposit'],
+                    ),
+                );
+
+                $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $per['per_date_start'] );
+                if( $DayOfGo > 31 ){ // 32+
+                    $settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+                    $settings['fullPayment']['date'] = date('Y-m-d 18:00', strtotime("-30 day", strtotime($settings['trave']['date'])));
+                }elseif ( $DayOfGo > 13 ){ // 14-31
+                    $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));
+                    $settings['deposit']['date'] = '';
+                    $settings['deposit']['price'] = 0;
+                }elseif($DayOfGo >7){ // 8-13
+                    $settings['fullPayment']['date'] = date("Y-m-d 18:00", strtotime("+1 day"));
+                    $settings['deposit']['price'] = 0;
+                    $settings['deposit']['date'] = '';
+                }elseif($DayOfGo >3){ // 4-7
+                    $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+12 hour"));
+                    $settings['deposit']['price'] = 0;
+                    $settings['deposit']['date'] = '';
+                }
+                else{ //defualt
+                    $settings['fullPayment']['date'] = date("Y-m-d H:i:s", strtotime("+3 hour"));
+                    $settings['deposit']['price'] = 0;
+                    $settings['deposit']['date'] = '';
+                }
+
+                $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
+
+                if( !empty($_POST) ){
+                    print_r($_POST);die;
+                }
+                else{
+                    $this->view->setData('promotion', $this->model->query("booking")->getPromotion( date("Y-m-d") ));
+                    $this->view->setData('seatBooked', $seatBooked );
+                    $this->view->setData('settings', $settings );
+                    $this->view->setData('salesList', $this->model->query('products')->salesList( $period ) );
+                    $this->view->setData('company', $this->model->query("booking")->companyLists());
+                }
+            }
+            elseif( $sections == "payment" ){
+                $this->view->setPage('title', 'การชำระเงิน');
+                if( empty($item) ) header("location:".URL."office/booking/basic");
 
             }
-            elseif( $section == "payment" ){
-
-            }
-            elseif( $section == "customers" ){
+            elseif( $sections == "room" ){
+                $this->view->setPage('title', 'ข้อมูลผู้เดินทาง');
+                if( empty($item) ) header("location:".URL."office/booking/basic");
 
             }
             else{
                 $this->error();
             }
+
+            $render = "booking/forms/create/display";
         }
         else{
             if( $this->format=='json' ){
@@ -275,6 +354,8 @@ class Office extends Controller {
 
         if( empty($period) || empty($bus) ) $this->error();
 
+        $booking = $this->model->query("booking")->lists( array("period"=>$period, "bus"=>$bus, "room"=>true) );
+        $this->view->setData("booking", $booking);
         $this->view->render( "booking/forms/room_detail" );
     }
 }

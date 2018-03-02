@@ -45,4 +45,19 @@ class Profile extends Controller {
         $this->view->setData("results", $agency);
         $this->view->render('profile/manage');
     }
+    public function accounting(){
+        if( empty($this->me) || empty($this->me['company_id']) ) $this->error();
+        $this->view->setPage('title', 'Accounting Managemant System');
+
+        # CODE RESULTS
+        /* GET SALES */
+        $s_options = array(
+            "company"=>$this->me["company_id"],
+            "unlimit"=>true
+        );
+        $agency = $this->model->query("agency")->lists( $s_options );
+        $this->view->setData('sales', $agency);
+
+        $this->view->render('profile/accounting');
+    }
 }

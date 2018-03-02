@@ -36,6 +36,15 @@ $form   ->field("pass")
 						<li>
 							<a class="dropdown-item" href="<?=URL?>profile/history">Booking History</a>
 						</li>
+						<li>
+							<a class="dropdown-item" href="<?=URL?>profile/accounting">Accounting System</a>
+						</li>
+						<li>
+							<a class="dropdown-item" data-plugins="dialog" href="<?=URL?>agency/edit/<?=$this->me['id'] ?>">จัดการโปรไฟล์</a>
+						</li>
+						<li>
+							<a class="dropdown-item" data-plugins="dialog" href="<?=URL?>agency/change_password/<?=$this->me['id'] ?>">เปลี่ยนรหัสผ่าน</a>
+						</li>
 					</div>
 				</div></span>
 				

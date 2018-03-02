@@ -55,14 +55,14 @@ if( !empty($this->results['lists']) ){
                     $txt = '<span class="gbtn"><a class="btn btn-red btn-small"><i class="icon-lock"></i> เต็ม</a></span>';
                 }
                 else{
-                    $txt = '<span class="gbtn"><a class="btn btn-small btn-orange" href="http://admin.probookingcenter.com/admin/booking/manage_booking.php?per_id='.$per['id'].'&bus_no='.$per['bus_no'].'" target="_blank"><em class="icon-book"></em> W/L</a></span>';
+                    $txt = '<span class="gbtn"><a class="btn btn-small btn-orange" href="'.URL.'office/booking/basic?period='.$per['id'].'&bus='.$per['bus_no'].'" target="_blank"><em class="icon-book"></em> W/L</a></span>';
                 }
 
                 if( intval($per['balance'])<=0 ){
                     $btn = $txt;
                 }
                 else{
-                    $btn = '<span class="gbtn"><a class="btn btn-small btn-blue" href="http://admin.probookingcenter.com/admin/booking/manage_booking.php?per_id='.$per['id'].'&bus_no='.$per['bus_no'].'" target="_blank"><em class="icon-book"></em> จอง</a></span>';
+                    $btn = '<span class="gbtn"><a class="btn btn-small btn-blue" href="'.URL.'office/booking/basic?period='.$per['id'].'&bus='.$per['bus_no'].'" target="_blank"><em class="icon-book"></em> จอง</a></span>';
                 }
 
                 if( $per["status"] == 3 ){

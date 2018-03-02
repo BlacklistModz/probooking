@@ -23,9 +23,9 @@
 		}
 		else{
 
-			if( $(this).hasClass('active') ){
-				return false;
-			}
+			// if( $(this).hasClass('active') ){
+			// 	return false;
+			// }
 			
 			$customersMain.html( 
 				$('<div>', {class:"tac", style:"padding-top:25%;"}).append( 
@@ -40,6 +40,13 @@
 				Event.plugins( $customersMain );
 			} );
 			
+		}
+	});
+
+	$("a").click(function(){
+		var href = $(this).attr("href");
+		if( href !== undefined ){
+			window.location.href = href;
 		}
 	});
 </script>
