@@ -420,6 +420,80 @@ class Reports_Model extends Model{
         return $data;
     }
 
+    /* REPORT FOR FRONTEND */
+    public function accounting( $options=array() ){
+        $field = "b.book_id
+                  , b.book_code
+                  , b.status
+                  , b.book_due_date_deposit
+                  , b.book_due_date_full_payment
+
+                  , a.agen_fname
+                  , a.agen_lname
+                  , a.agen_nickname
+
+                  , u.user_fname
+                  , u.user_lname
+                  , u.user_nickname
+
+                  , COALESCE(SUM(book_list_qty),0) AS qty
+
+                  , ac.agen_com_name
+
+                  , p.per_date_start
+                  , p.per_date_end
+
+                  , s.ser_code
+
+                  , b.book_amountgrandtotal";
+        $table = "booking b 
+                    LEFT JOIN booking_list bl ON b.book_code=bl.book_code
+                    LEFT JOIN agency a ON b.agen_id=a.agen_id
+                    LEFT JOIN user u ON b.user_id=u.user_id
+                    LEFT JOIN agency_company ac ON a.agency_company_id=ac.agen_com_id
+                    LEFT JOIN period p ON b.per_id=p.per_id
+                    LEFT JOIN series s ON p.ser_id=s.ser_id";
+
+        $data = array();
+        $where_str = '';
+        $where_arr = array();
+
+        if( !empty($options["expired"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "((b.status IN (0,20,55) AND book_due_date_deposit <= :date) 
+                           OR (b.status IN (25,30,55) AND book_due_date_full_payment <= :date))";
+            $where_arr[":date"] = date("Y-m-d");
+        }
+
+        if( !empty($options["start"]) && !empty($options["end"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "((b.status IN (0,20,55) AND (book_due_date_deposit BETWEEN :s AND :e)) 
+                           OR (b.status IN (0,25,30,55) AND (book_due_date_full_payment BETWEEN :s AND :e)))";
+            $where_arr[":s"] = $options["start"];
+            $where_arr[":e"] = $options["end"];
+        }
+
+        if( !empty($options["company"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "ac.agen_com_id=:company";
+            $where_arr[":company"] = $options["company"];
+        }
+
+        $where_str .= !empty($where_str) ? " AND " : "";
+        $where_str .= "bl.book_list_code IN (1,2,3)";
+
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+        $sql = "SELECT {$field} FROM {$table} {$where_str} GROUP BY b.book_id";
+        // print_r($where_arr);die;
+        $results = $this->db->select( $sql , $where_arr);
+
+        foreach ($results as $key => $value) {
+            $data[$key] = $value;
+            $data[$key]['status_arr'] = $this->query("booking")->getStatus( $value["status"] );
+        }
+        return $data;
+    }
+
     /* LIST FOR JSON */
     public function listsSeries( $country_id=null ){
     	$w = 'status IN (1,9)';

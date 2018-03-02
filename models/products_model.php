@@ -422,7 +422,7 @@ class Products_Model extends Model{
     }
     public function salesList($id)
     {
-        return $this->db->select("SELECT user_id as id, CONCAT(`user_fname`, ' ', `user_lname`, '(', `user_tel`, ')') AS 'name' FROM user WHERE status=:status AND group_id IN (3,5,7) ORDER BY user_fname", array(':status'=>1 ));
+        return $this->db->select("SELECT user_id as id, CONCAT(`user_nickname`, '(', `user_tel`, ')') AS 'name' FROM user WHERE status=:status AND group_id IN (3,5,7) ORDER BY user_fname", array(':status'=>1 ));
     }
 
     public function periodList($id, $options=array()){

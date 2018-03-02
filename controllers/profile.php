@@ -50,14 +50,40 @@ class Profile extends Controller {
         $this->view->setPage('title', 'Accounting Managemant System');
 
         # CODE RESULTS
-        /* GET SALES */
-        $s_options = array(
-            "company"=>$this->me["company_id"],
-            "unlimit"=>true
-        );
-        $agency = $this->model->query("agency")->lists( $s_options );
-        $this->view->setData('sales', $agency);
+        if( $this->format!='json' ){
+            /* GET SALES */
+            $s_options = array(
+                "company"=>$this->me["company_id"],
+                "unlimit"=>true
+            );
+            $agency = $this->model->query("agency")->lists( $s_options );
+            $this->view->setData('sales', $agency);
 
-        $this->view->render('profile/accounting');
+            $options = array(
+                "expired" => true,
+                "company" => $this->me["company_id"]
+            );
+            $results = $this->model->query("reports")->accounting( $options );
+            $this->view->setData("results", $results);
+            $render = "profile/accounting";
+        }
+        else{
+            $date = isset($_REQUEST["date"]) ? $_REQUEST["date"] : date("Y-m-d");
+            $agency = isset($_REQUEST["agency"]) ? $_REQUEST["agency"] : '';
+
+            $start = date("Y-m-d 00:00:00", strtotime($date));
+            $end = date("Y-m-d 23:59:59", strtotime($date));
+
+            $options = array(
+                "start" => $start,
+                "end" => $end,
+                "company" => $this->me["company_id"]
+            );
+
+            $results = $this->model->query("reports")->accounting( $options );
+            $this->view->setData("results", $results);
+            $render = "profile/sections/table-account";
+        }
+        $this->view->render($render);
     }
 }
