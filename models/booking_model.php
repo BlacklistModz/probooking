@@ -172,6 +172,9 @@ class Booking_Model extends Model {
                 $data['book_jl'] += $value['book_list_qty'];
                 continue;
             }
+            if( $value['book_list_code'] > 5 ){
+                continue;
+            }
             $total_qty += $value["book_list_qty"];
         }
         $data['book_qty'] = $total_qty;
@@ -199,6 +202,19 @@ class Booking_Model extends Model {
         }else{
             $data['per_url_pdf'] = '';
         }
+
+        if( !empty($data['per_url_word']) && $data['per_url_word'] != 'undefined' ){
+            $file = substr(strrchr($data['per_url_word'],"/"),1);
+            if( file_exists(PATH_TRAVEL.$file) ){
+                $data['per_url_word'] = 'http://admin.probookingcenter.com/admin/upload/travel/'.$file;
+            }
+            else{
+                $data['per_url_word'] = '';
+            }
+        }else{
+            $data['per_url_word'] = '';
+        }
+        
         $data["total_passport"] = $this->db->count("passport", "pass_book_id={$data["book_id"]}");
         $data["permit"]["cancel"] = false;
         if( $data["status"] == 0 || $data["status"] == 5 || $data['status'] == 10 ){
@@ -211,7 +227,13 @@ class Booking_Model extends Model {
 
     public function detailInsert(&$data){
     	$this->db->insert('booking_list', $data);
-    	$data['id'] = $this->db->lastInsertId();
+    	// $data['id'] = $this->db->lastInsertId();
+    }
+    public function detailUpdate($id, $data){
+        $this->db->update("booking_list", $data, "book_list_id={$id}");
+    }
+    public function detailDelete($id){
+        $this->db->delete("booking_list", "book_list_id={$id}");
     }
 
     /* STATUS */

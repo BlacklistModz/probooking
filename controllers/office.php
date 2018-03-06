@@ -241,7 +241,7 @@ class Office extends Controller {
         if( !empty($sections) ){
             /* SET ITEM */
             if( !empty($id) ){
-                $item = $this->model->query('booking')->get($id);
+                $item = $this->model->query('booking')->get($id, array('payment'=>true));
                 if( empty($item) ) $this->error();
                 $this->view->setData("item", $item);
 
@@ -266,6 +266,8 @@ class Office extends Controller {
             if( $sections == "basic" ){
                 $this->view->setPage('title', 'รายละเอียดการจองทัวร์');
                 $this->view->setData('busList', $this->model->query("products")->busList( $period ));
+
+                $promotion = $this->model->query("booking")->getPromotion( date("Y-m-d") );
 
                 // จำนวน ที่นั่ง ที่จองไปแล้ว
                 $seatBooked = $this->model->query('products')->seatBooked( $period, $bus );
@@ -307,10 +309,227 @@ class Office extends Controller {
                 $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
                 if( !empty($_POST) ){
-                    print_r($_POST);die;
+
+                    $_items = array();
+                    if( !empty($item) ){
+                        $availableSeat += $item["book_qty"];
+                        $status = $item["status"];
+
+                        if( !empty($item['items']) ){
+                            foreach ($item['items'] as $key => $value) {
+                                $_items[] = $value["book_list_id"];
+                            }
+                        }
+                    }
+                    else{
+                        $status = $availableSeat<=0 ? '05': '00'; // 00 = จอง, 05=รอ
+                    }
+
+                    $totalQty = 0;
+                    $totalDis = 0;
+                    $_SUM = array('subtotal'=>0, 'discount'=>0, 'total'=>0); $seats = array(); $n = 0;
+                    foreach ($_POST['seat'] as $key => $value) {
+                        $n ++;
+                        if( empty($value) ) $value = 0;
+                    // if( empty($value) ) continue;
+
+                        switch ($key) {
+                            case 'adult': $name='Adult'; $price=$per['per_price_1']; break;
+                            case 'child': $name='Child'; $price=$per['per_price_2']; break;
+                            case 'child_bed': $name='Child No bed'; $price=$per['per_price_3']; break;
+                            case 'infant': $name='Infant'; $price=$per['per_price_4']; break;
+                            case 'joinland': $name='Joinland'; $price=$per['per_price_5']; break;
+
+                            default: $name=''; $price=0; break;
+                        }
+                        $total = $value * $price;
+                        $seats[] = array(
+                            'book_list_code' => $n,
+                            'book_list_name' => $name,
+                            'book_list_price' => $price,
+                            'book_list_qty' => $value,
+                            'book_list_total' => $total,
+                        );
+
+                        if( in_array($key, array('adult', 'child', 'child_bed', 'joinland')) ){
+                            $totalQty += $value;
+                        }
+
+                        if( in_array($key, array('adult', 'child', 'child_bed')) ){
+                            $totalDis += $value;
+                        }
+                        $_SUM['subtotal'] += $total;
+                    }
+
+                    $ex_count = count($_POST["book_list"]["name"]);
+                    for($i=0;$i<=$ex_count;$i++){
+                        $n++;
+                        if( empty($_POST["book_list"]["name"][$i]) || 
+                            empty($_POST["book_list"]["price"][$i]) || 
+                            empty($_POST["book_list"]["qty"][$i]) ) continue;
+
+                        $seats[] = array(
+                            'book_list_code' => $n,
+                            'book_list_name' => $_POST["book_list"]["name"][$i],
+                            'book_list_price' => $_POST["book_list"]["price"][$i],
+                            'book_list_qty' => $_POST["book_list"]["qty"][$i],
+                            'book_list_total' => $_POST["book_list"]["total"][$i],
+                        );
+                        $_SUM['subtotal'] += $_POST["book_list"]["total"][$i];
+                    }
+
+                    if( !empty($item) ){
+                        if( $totalDis>$availableSeat ){
+                            $arr['error'] = 1;
+                            $arr['message'] = array('text'=>'ใส่จำนวนคนไม่ถูกต้อง !', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
+                        }
+                    }
+                    else{
+                        if( $totalDis>$availableSeat && $status=='00' ){
+                            $arr['error'] = 1;
+                            $arr['message'] = array('text'=>'ใส่จำนวนคนไม่ถูกต้อง !', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
+                        }
+                    }
+
+                    $room_total = 0;
+                    foreach ($_POST["room"] as $key => $value) {
+                        if( empty($value) ) continue;
+                        $room_total += $value;
+                    }
+                    if( empty($_POST["sale_id"]) ){
+                        $arr["error"]["sale_id"] = "กรุณาเลือก Sale Contact";
+                        $arr['message'] = array('text'=>'กรุณาเลือก Sale Contact', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+                    }
+                    else if( empty($seats) ){
+                        $arr['error'] = 1;
+                        $arr['message'] = array('text'=>'กรุณากรอกข้อมูลที่นั่ง !', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
+                    }
+                    else if( empty($room_total) ){
+                        $arr['error'] = 1;
+                        $arr['message'] = array('text'=>'กรุณาเลือกห้อง', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+                    }
+                    else if( empty($_POST["customername"]) || empty($_POST["customertel"]) ){
+                        $arr['error']['customername'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+                        $arr['error']['customertel'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+                        $arr['message'] = array('text'=>'กรุณากรอกชื่อ-นามสกุล และเบอร์โทรศัพท์ของลูกค้า', 'auto'=>1, 'load'=>1, 'bg'=>'red');
+                    }
+                    else if( empty($arr['error']) ){
+
+                        if( !empty($_POST['room']['single']) ){
+                            $_SUM['subtotal'] += $_POST['room']['single']*$item['single_charge'];
+                        }
+
+                        $comOffice = $per['per_com_company_agency']*$totalQty;
+                        $comAgency = $per['per_com_agency']*$totalQty;
+
+                        $extra_discount = 0;
+                        if( $per["per_discount"] > 0 ){
+                            $extra_discount = $per["per_discount"] * $totalDis;
+                        }
+                        if( $promotion > 0 ){
+                            $extra_discount += $promotion * $totalDis;
+                        }
+
+                        $_SUM['discount'] = $comOffice + $comAgency + $extra_discount;
+                        $_SUM['total'] = $_SUM['subtotal'] - $_SUM['discount'];
+
+                        $settings['deposit']['price'] *= $totalQty;
+
+                        /*-- insert: booking --*/
+                        $book = array(
+                            "agen_id"=>$_POST['sale'],
+                            "user_id"=>$_POST['sale_id'],
+                            "per_id"=>$period, // period: id
+                            "bus_no"=> $bus,  // POST: bus
+
+                            "book_total"=>$_SUM['subtotal'], // book_total // ยอดรวมรายการทั้งหมด
+
+                            "book_master_deposit"=>$settings['deposit']['price'], // จำนวนเงินที่ต้องมัดจำ Master
+                            "book_due_date_deposit"=>$settings['deposit']['date'], // กำหนดจ่ายเงินมัดจำ
+                            "book_master_full_payment"=>$_SUM['total']-$settings['deposit']['price'], // จำนวนเงินที่ต้องจ่ายเต็ม Master
+                            "book_due_date_full_payment"=>$settings['fullPayment']['date'], // กำหนดจ่ายเงิน Full payment
+
+                            "status"=> !empty($item["status"]) ? $item["status"] : $status,
+                            "book_discount"=> $extra_discount , // หากมีส่วนลดเพิ่มเติมจาก Period
+                            "book_amountgrandtotal"=> $_SUM['total'], // book_amountgrandtotal ยอดรวมสุทธิ
+                            "book_comment"=>$_POST['comment'], // POST: comment
+
+                            "book_com_agency_company"=>$comOffice,  // period: per_com_company_agency
+                            "book_com_agency"=>$comAgency, // period: per_com_agency
+
+                            "book_room_twin"=>$_POST['room']['twin'], 
+                            "book_room_double"=>$_POST['room']['double'], 
+                            "book_room_triple"=>$_POST['room']['triple'], 
+                            "book_room_single"=>$_POST['room']['single'], 
+
+                            "book_cus_name"=>$_POST['customername'],
+                            "book_cus_tel"=>$_POST['customertel'],
+                        );
+
+                        if( !empty($id) ){
+                            $book["inv_rev_no"] = $item["inv_rev_no"]+1;
+                            $invoice_code = str_replace("B", "", $item["book_code"]);
+                            $book["invoice_code"] = "I{$invoice_code}({$book["inv_rev_no"]})";
+                            $this->model->query('booking')->update($id, $book);
+                            $bookCode = $item["book_code"];
+                        }
+                        else{
+                            /*-- get: prefixnumber --*/
+                            $prefixNumber = $this->model->query('booking')->prefixNumber();
+
+                            $booking = !empty($prefixNumber['pre_booking'])? intval($prefixNumber['pre_booking']): 1;
+                            $invoice = !empty($prefixNumber['pre_invoice'])? intval($prefixNumber['pre_invoice']): 1;
+                            $year = !empty($prefixNumber['pre_year'])? intval($prefixNumber['pre_year']): date('Y');
+                            $month = !empty($prefixNumber['pre_month'])? intval($prefixNumber['pre_month']): date('m');
+
+
+                            $running_booking = sprintf("%04s", $booking);
+                            $running_invoice = sprintf("%04s", $invoice);
+                            $month = sprintf("%02d", $month);
+                            $bookCode = "B{$year}/{$month}{$running_booking}";
+
+                            $book["book_date"] = date('c');
+                            $book["book_code"] = $bookCode;
+                            $book["invoice_code"] = "I{$year}/{$month}{$running_invoice}";
+                            $book["invoice_date"] = date("c");
+                            $book["create_date"] = date("c");
+
+                            $this->model->query('booking')->insert( $book );
+
+                            /* -- update: prefixnumber -- */
+                            $this->model->query('booking')->prefixNumberUpdate( 1, array(
+                                'pre_booking' => $booking+1,
+                                'pre_invoice' => $invoice+1
+                            ) );
+                        }
+
+                        /* SET DETAIL */
+                        foreach ($seats as $key => $value) {
+                            if( !empty($_items[$key]) ){
+                                $value['update_date'] = date('c');
+                                $this->model->query('booking')->detailUpdate($_items[$key], $value);
+                                unset($_items[$key]);
+                            }
+                            else{
+                                $value['book_code'] = $bookCode;
+                                $value['create_date'] = date('c');
+                                $this->model->query('booking')->detailInsert($value);
+                            }
+                        }
+
+                        /* DEL DETAIL */
+                        foreach ($_items as $key => $value) {
+                            $this->model->query('booking')->detailDelete($value);
+                        }
+
+                        $arr['message'] = 'บันทึกข้อมูลการจองเรียบร้อย !';
+                        $arr['url'] = URL.'office/booking';
+                    }
+                    echo json_encode($arr);
+                    exit;
                 }
                 else{
-                    $this->view->setData('promotion', $this->model->query("booking")->getPromotion( date("Y-m-d") ));
+                    $this->view->setData('promotion', $promotion);
                     $this->view->setData('seatBooked', $seatBooked );
                     $this->view->setData('settings', $settings );
                     $this->view->setData('salesList', $this->model->query('products')->salesList( $period ) );

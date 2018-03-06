@@ -26,6 +26,17 @@ if( !empty($this->item["items"]) ){
 	}
 }
 
+if( empty($this->item) ){
+    if( $availableSeat <= 0 ){
+        $this->item["book_status"]["id"] = 5;
+        $this->item["book_status"]["name"] = "Waiting List";
+    }
+    else{
+        $this->item["book_status"]["id"] = 0;
+        $this->item["book_status"]["name"] = "จอง";
+    }
+}
+
 // Deposit Date
 $depositDate = date('Y-m-d');
 $depositDate = date('Y-m-d', strtotime("+2 day", strtotime($depositDate)));
@@ -139,6 +150,9 @@ $options = $this->fn->stringify(
 								<tr><td>อีเมลล์ : <span style="color:#3F51B5;"><?= !empty($this->item["agen_email"]) ? $this->item["agen_email"] : "-" ?></span></td></tr>
 								<tr><td>เบอร์โทร : <span style="color:#3F51B5;"><?= !empty($this->item["agen_tel"]) ? $this->item["agen_tel"] : "-" ?></span></td></tr>
 								<tr><td>บริษัท : <span style="color:#3F51B5;"><?= !empty($this->item["agen_com_name"]) ? $this->item["agen_com_name"] : "-" ?></span></td></tr>
+                                <tr>
+                                    <td>สถานะ : <span class="status-label status_<?=$this->item["book_status"]["id"]?>"><?= $this->item["book_status"]["name"]; ?></span></td>
+                                </tr>
 							</tbody></table>
 						</div>
 					</div>

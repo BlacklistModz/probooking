@@ -405,7 +405,7 @@ class Reports_Model extends Model{
             /* SET Payment */
             $payment = $this->db->select("SELECT pay_date, pay_received 
                                           FROM payment LEFT JOIN booking ON payment.book_id=booking.book_id 
-                                          WHERE booking.per_id='{$value["per_id"]}' AND payment.status=1");
+                                          WHERE booking.per_id='{$value["per_id"]}' AND booking.bus_no='{$value["bus_no"]}' AND payment.status=1");
             foreach ($payment as $pay) {
                 $month = date("Y-n", strtotime($pay["pay_date"]));
                 if( empty($data["lists"][$key][$month]["total"]) ){

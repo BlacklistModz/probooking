@@ -2610,17 +2610,17 @@ if ( typeof Object.create !== 'function' ) {
 			$tr.append(
 				$('<td>', {class: "no tac"}),
 				$('<td>').append( 
-					$("<input>", {type:"text", name:"book_list[name][]", class:"inputtext", style:"width: 100%;"}) 
+					$("<input>", {type:"text", name:"book_list[name][]", class:"inputtext", style:"width: 100%;" , value:data.book_list_name}) 
 				),
 				$('<td>').append(
-					$("<input>", {type:"text", name:"book_list[price][]", class:"inputtext js-price tac", style:"width: 100%;"})
+					$("<input>", {type:"text", name:"book_list[price][]", class:"inputtext js-price tac", style:"width: 100%;", value: parseInt(data.book_list_price) || '' })
 				),
 				$('<td>').append(
-					$("<input>", {type:"text", name:"book_list[qty][]", class:"inputtext js-qty tac", style:"width: 100%;"})
+					$("<input>", {type:"text", name:"book_list[qty][]", class:"inputtext js-qty tac", style:"width: 100%;", value:data.book_list_qty})
 				),
 				$('<td>', {class:"tac"}).append(
-					$("<span>", {class:"js-total"}),
-					$("<input>", {type:"hidden", name:"book_list[total][]", class:"inputtext js-input-total", style:"width: 100%;"})
+					$("<span>", {class:"js-total"}).append( PHP.number_format(data.book_list_total) ),
+					$("<input>", {type:"hidden", name:"book_list[total][]", class:"inputtext js-input-total", style:"width: 100%;", value:data.book_list_total})
 				),
 				$('<td>', {class:"tac"}).append(
 					$("<span>", {class:"gbtn"}).append(
