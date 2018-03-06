@@ -267,7 +267,7 @@ class Office extends Controller {
                 $this->view->setPage('title', 'รายละเอียดการจองทัวร์');
                 $this->view->setData('busList', $this->model->query("products")->busList( $period ));
 
-                $promotion = $this->model->query("booking")->getPromotion( date("Y-m-d") );
+                // $promotion = $this->model->query("booking")->getPromotion( date("Y-m-d") );
 
                 // จำนวน ที่นั่ง ที่จองไปแล้ว
                 $seatBooked = $this->model->query('products')->seatBooked( $period, $bus );
@@ -426,9 +426,9 @@ class Office extends Controller {
                         if( $per["per_discount"] > 0 ){
                             $extra_discount = $per["per_discount"] * $totalDis;
                         }
-                        if( $promotion > 0 ){
-                            $extra_discount += $promotion * $totalDis;
-                        }
+                        // if( $promotion > 0 ){
+                        //     $extra_discount += $promotion * $totalDis;
+                        // }
 
                         $_SUM['discount'] = $comOffice + $comAgency + $extra_discount;
                         $_SUM['total'] = $_SUM['subtotal'] - $_SUM['discount'];
@@ -529,7 +529,7 @@ class Office extends Controller {
                     exit;
                 }
                 else{
-                    $this->view->setData('promotion', $promotion);
+                    // $this->view->setData('promotion', $promotion);
                     $this->view->setData('seatBooked', $seatBooked );
                     $this->view->setData('settings', $settings );
                     $this->view->setData('salesList', $this->model->query('products')->salesList( $period ) );
