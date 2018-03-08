@@ -69,12 +69,19 @@ hr {
 		</div>
 		<hr class="mtm">
 		<div class="clearfix">
-			<h3 class="fwb"><i class="icon-list mrs"></i> รายการชำระเงิน</h3>
+			<div class="lfloat">
+				<h3 class="fwb"><i class="icon-list mrs"></i> รายการชำระเงิน</h3>
+			</div>
+			<div class="rfloat">
+				<span class="gbtn">
+					<a href="<?=URL?>payment/add/<?=$this->item["book_id"]?>" data-plugins="dialog" class="btn btn-blue btn-small"><i class="icon-plus mrs"></i>เพิ่มการชำระเงิน</a>
+				</span>
+			</div>
 			<table class="table-bordered mts" width="100%">
 				<thead>
 					<tr style="color:#fff; background-color: #003;">
 						<th class="pas" width="2%">#</th>
-						<th width="10%">สถานะ</th>
+						<th width="9%">สถานะ</th>
 						<th width="5%">ไฟล์อ้างอิง</th>
 						<th width="8%">ธนาคาร</th>
 						<th width="8%">สาขา</th>
@@ -83,10 +90,11 @@ hr {
 						<th width="7%">จำนวนเงิน</th>
 						<th width="5%">วันที่โอน</th>
 						<th width="5%">เวลาที่โอน</th>
-						<th width="10%">ผู้ทำรายการ</th>
-						<th width="10%">วันที่ทำรายการ</th>
-						<th width="10%">สถานะการชำระเงิน</th>
-						<th width="5%"></th>
+						<th width="9%">ผู้ทำรายการ</th>
+						<th width="8%">วันที่ทำรายการ</th>
+						<th width="9%">สถานะการชำระเงิน</th>
+						<th width="3%">แก้ไข</th>
+						<th width="7%"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -129,18 +137,37 @@ hr {
 								<td class="tac">
 									<span class="status-label status_<?=$value["book_status"]["id"]?>"><?=$value["book_status"]["name"]?></span>
 								</td>
-								<td></td>
+								<td class="tac">
+									<span class="gbtn">
+										<a href="<?=URL?>payment/edit/<?=$value["pay_id"]?>" class="btn btn-orange btn-no-padding" data-plugins="dialog"><i class="icon-pencil"></i></a>
+									</span>
+								</td>
+								<td class="whitespace tac">
+									<?php if( $value["status"]["id"] == 0 || $value["status"]["id"] == 9 ) { ?>
+									<span class="gbtn">
+										<a href="<?=URL?>payment/setStatus/<?=$value["pay_id"]?>/1" data-plugins="dialog" class="btn btn-green btn-small"><i class="icon-check-circle-o mrs"></i>อนุมัติ</a>
+									</span>
+									<?php } ?>
+									<?php if( $value["status"]["id"] == 0 || $value["status"]["id"] == 1 ) { ?>
+									<span class="gbtn">
+										<a href="<?=URL?>payment/setStatus/<?=$value["pay_id"]?>/9" data-plugins="dialog" class="btn btn-red btn-small"><i class="icon-remove mrs"></i>ไม่อนุมัติ</a>
+									</span>
+									<?php } ?>
+								</td>
 							</tr>
 							<?php 
 						}
 					}
 					else{
 						echo '<tr style="color:#fff; background-color: #ff902b;">
-						<td colspan="14" class="pal tac"><span class="fsxxl">ไม่พบข้อมูล</span></td>
+						<td colspan="15" class="pal tac"><span class="fsxxl">ไม่พบข้อมูล</span></td>
 						</tr>';
 					} ?>
 				</tbody>
 			</table>
 		</div>
+	</div>
+	<div class="tac mtm">
+		<a href="<?=URL?>office/booking" class="btn btn-red">กลับหน้าหลัก</a>
 	</div>
 </div>

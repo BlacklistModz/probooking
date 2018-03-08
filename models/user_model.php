@@ -123,7 +123,7 @@ class User_Model extends Model{
     }
     public function login($user, $pass){
 
-        $sth = $this->db->prepare("SELECT user_id as id FROM {$this->_objType} WHERE (user_name=:login AND user_password=:pass) OR (user_email=:login AND user_password=:pass)");
+        $sth = $this->db->prepare("SELECT user_id as id FROM {$this->_objType} WHERE ((user_name=:login AND user_password=:pass) OR (user_email=:login AND user_password=:pass)) AND status=1");
 
         $sth->execute( array(
             ':login' => $user,

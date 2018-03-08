@@ -62,6 +62,9 @@ class Booking_Model extends Model {
         if( isset($_REQUEST["status"]) ){
             $options["status"] = $_REQUEST["status"];
         }
+        if( isset($_REQUEST["sales"]) ){
+            $options["sales"] = $_REQUEST["sales"];
+        }
 
         if( !empty($options["company"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";
@@ -91,6 +94,12 @@ class Booking_Model extends Model {
             $where_str .= !empty($where_str) ? " AND " : "";
             $where_str .= "b.status=:status";
             $where_arr[":status"] = $options["status"];
+        }
+
+        if( !empty($options["sales"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "b.user_id=:sales";
+            $where_arr[":sales"] = $options["sales"];
         }
 
         if( !empty($options["q"]) ){
@@ -473,12 +482,28 @@ class Booking_Model extends Model {
         return $data;
     }
     public function convertRoom( $data, $options=array() ){
-        $data = $this->_cutFirstFieldName("room_", $value);
+        $data = $this->_cutFirstFieldName("room_", $data);
         return $data;
+    }
+    public function setRoom($data){
+        if( !empty($data["id"]) ){
+            $id = $data["id"];
+            unset($data["id"]);
+            $this->db->update($this->_roomTable, $data, "room_id={$id}");
+        }
+        else{
+            $this->db->insert($this->_roomTable, $data);
+        }
+    }
+    public function unsetRoom($id){
+        $this->db->delete($this->_roomTable, "room_id={$id}");
     }
 
     /* AGENCY */
     public function companyLists(){
         return $this->db->select("SELECT agen_com_id AS id, agen_com_name AS name FROM agency_company WHERE status=1 ORDER BY agen_com_name ASC");
+    }
+    public function salesLists(){
+        return $this->db->select("SELECT user_id AS id, user_nickname AS name FROM user WHERE status=1 AND group_id IN (3,5,7) ORDER BY user_nickname ASC");
     }
 }

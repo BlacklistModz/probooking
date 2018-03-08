@@ -28,7 +28,7 @@ if( !empty($this->results['lists']) ){
                         $cls = " s-{$value['status']}";
                         $guarantee = '';
                         if( !empty($value["book_is_guarantee"]) ){
-                            $guarantee = '<i class="fa fa-thumbs-up"></i>';
+                            $guarantee = '<i class="icon-thumbs-up"></i>';
                         }
 
                         $booking .= !empty($booking) ? " | " : "";
@@ -42,7 +42,7 @@ if( !empty($this->results['lists']) ){
                         $cls = " s-{$value['status']}";
                         $guarantee = '';
                         if( !empty($value["book_is_guarantee"]) ){
-                            $guarantee = '<i class="fa fa-thumbs-up"></i>';
+                            $guarantee = '<i class="icon-thumbs-up"></i>';
                         }
 
                         $waiting .= !empty($waiting) ? " | " : "";

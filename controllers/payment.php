@@ -17,7 +17,12 @@ class Payment extends Controller {
         $book = $this->model->query('booking')->get($id);
         if( empty($book) ) $this->error();
 
-        $bank = $this->model->query('bankbook')->lists( array("is_payment"=>true) );
+        $options = array();
+        if( empty($this->me["group_id"]) ){
+            $options["is_payment"] = true;
+        }
+
+        $bank = $this->model->query('bankbook')->lists( $options );
 
         $this->view->setData('book', $book);
         $this->view->setData('bank', $bank['lists']);
@@ -34,7 +39,11 @@ class Payment extends Controller {
         $book = $this->model->query('booking')->get($item["book_id"]);
         if( empty($book) ) $this->error();
 
-        $bank = $this->model->query('bankbook')->lists( array("is_payment"=>true) );
+        $options = array();
+        if( empty($this->me["group_id"]) ){
+            $options["is_payment"] = true;
+        }
+        $bank = $this->model->query('bankbook')->lists( $options );
 
         $this->view->setData('item', $item);
         $this->view->setData('book', $book);
@@ -68,7 +77,7 @@ class Payment extends Controller {
         			$this->model->update($id, $postData);
         		}
         		else{
-                    $postData["user_action"] = $this->me["company_id"];
+                    $postData["user_action"] = !empty($this->me["company_id"]) ? $this->me["company_id"] : $this->me["name"];
         			$this->model->insert($postData);
         			$id = $postData["id"];
 
@@ -100,5 +109,47 @@ class Payment extends Controller {
         	$arr['error'] = $this->_getError($e->getMessage());
         }
         echo json_encode($arr);
+    }
+    public function setStatus($id=null, $status=null){
+        $id = isset($_REQUEST["id"]) ? $_REQUEST["id"] : $id;
+        $status = isset($_REQUEST["status"]) ? $_REQUEST["status"] : $status;
+
+        if( empty($id) || empty($status) || empty($this->me) || $this->format!='json' ) $this->error();
+
+        $item = $this->model->get($id);
+        if( empty($item) ) $this->error();
+
+        if( !empty($_POST) ){
+
+            if( $status == 9 && empty($_POST["remark_cancel"]) ){
+                $arr['error']["remark_cancel"] = "กรุณาระบุเหตุผลในการไม่อนุมัติ";
+            }
+
+            if( empty($arr['error']) ){
+                $postData = array(
+                    'status'=>$status,
+                    'remark_cancel'=> !empty($_POST["remark_cancel"]) ? $_POST["remark_cancel"] : '' 
+                );
+                $this->model->update($id, $postData);
+
+                $postBook = array(
+                    'status'=> $status == 1 ? $item["book_status"] : 55 
+                );
+
+                $this->model->query('booking')->update($item["book_id"], $postBook);
+
+                $arr['message'] = 'บันทึกข้อมูลเรียบร้อย';
+                $arr['url'] = 'refresh';
+            }
+
+            echo json_encode($arr);
+        }
+        else{
+            $this->view->setData('booking', $this->model->query('booking')->get($item["book_id"]));
+            $this->view->setData('item', $item);
+            $this->view->setData('status', $status);
+            $this->view->setPage('path', 'Themes/manage/forms/payment');
+            $this->view->render('setStatus');
+        }
     }
 }

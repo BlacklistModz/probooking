@@ -62,7 +62,7 @@
 				<td class="tar amount"><span class="mrs"><?= number_format($value["book_receipt"]) ?></span></td>
 				<td class="tac">
 					<span class="gbtn">
-						<a href="<?=URL?>" class="btn btn-blue btn-no-padding"><i class="icon-pencil"></i></a>
+						<a href="<?=URL?>office/booking/basic/<?=$value["book_id"]?>" class="btn btn-blue btn-no-padding"><i class="icon-pencil"></i></a>
 					</span>
 				</td>
 			</tr>

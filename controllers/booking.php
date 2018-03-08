@@ -588,6 +588,46 @@
         $this->view->render('forms/booking/payrejected');
     }
 
+    public function setRoom($id=null){
+        if( empty($_POST) || empty($id) ) $this->error();
+
+        $item = $this->model->get($id, array('room'=>true));
+        if( empty($item) ) $this->error();
+
+        $_items = array();
+        if( !empty($item["room"]) ){
+            foreach ($item["room"] as $key => $value) {
+                $_items[] = $value["id"];
+            }
+        }
+
+        $room = $_POST["room"];
+        for($i=0;$i<count($room["no"]);$i++){
+            $roomData = array();
+            foreach ($_POST["room"] as $key => $value) {
+                $roomData["room_".$key] = $room[$key][$i];
+            }
+
+            $roomData["book_code"] = $_POST["book_code"];
+
+            if( !empty($_items[$i]) ){
+                $roomData["id"] = $_items[$i];
+                unset($_items[$i]);
+            }
+            $this->model->setRoom($roomData);
+        }
+
+        if( !empty($_items) ){
+            foreach ($_items as $key => $value) {
+                $this->model->unsetRoom( $value );
+            }
+        }
+
+        $arr['message'] = 'บันทึกข้อมูลห้องพัก เรียบร้อยแล้ว';
+        $arr['url'] = 'refresh';
+        echo json_encode($arr);
+    }
+
     /* JSON ZONE */
     public function listsAgency( $com_id=null ){
         if( empty($com_id) ) $this->error();

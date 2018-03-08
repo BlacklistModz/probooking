@@ -159,16 +159,29 @@ class Controller {
     public $me = null;
     public function handleLogin(){
 
-        if( $this->pathName == "office" ){
-            if( Cookie::get( COOKIE_KEY_ADMIN ) ){
-                $me = $this->model->query('user')->get( Cookie::get( COOKIE_KEY_ADMIN ) );
-            }
+        if( $this->pathName == 'office' && Cookie::get( COOKIE_KEY_AGENCY ) ){
+            Cookie::clear( COOKIE_KEY_AGENCY );
+        }
+        if( $this->pathName == 'index' && Cookie::get( COOKIE_KEY_ADMIN ) ){
+            Cookie::clear( COOKIE_KEY_ADMIN );
+        }
+
+        if( Cookie::get( COOKIE_KEY_ADMIN ) ){
+            $me = $this->model->query('user')->get( Cookie::get( COOKIE_KEY_ADMIN ) );
         }
         elseif ( Cookie::get( COOKIE_KEY_AGENCY ) ) {
             $me = $this->model->query('agency')->get( Cookie::get( COOKIE_KEY_AGENCY ) );
         }
 
+        if( $this->pathName == 'office' && !empty($me) ){
+            if( $me["status"] != 1 && !empty($me['group_id']) ) {
+                $me = array();
+                Cookie::clear( COOKIE_KEY_ADMIN );
+            }
+        }
+
         if( !empty($me) ){
+
             $this->me =  $me;
 
 
@@ -186,8 +199,11 @@ class Controller {
 
 //            Cookie::set( COOKIE_KEY_AGENCY, $this->me['id'], time() + (3600*24));
 
-            if( $this->pathName == "office" ){
+            if( Cookie::get( COOKIE_KEY_ADMIN ) ){
                 Cookie::set( COOKIE_KEY_ADMIN, $this->me['id'], time() + (3600*24));
+            }
+            if(Cookie::get( COOKIE_KEY_AGENCY )  ){
+                Cookie::set( COOKIE_KEY_AGENCY, $this->me['id'], time() + (3600*24));
             }
 
             // 

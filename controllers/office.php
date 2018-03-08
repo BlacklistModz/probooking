@@ -241,7 +241,7 @@ class Office extends Controller {
         if( !empty($sections) ){
             /* SET ITEM */
             if( !empty($id) ){
-                $item = $this->model->query('booking')->get($id, array('payment'=>true));
+                $item = $this->model->query('booking')->get($id, array('payment'=>true, 'room'=>true));
                 if( empty($item) ) $this->error();
                 $this->view->setData("item", $item);
 
@@ -404,10 +404,10 @@ class Office extends Controller {
                         $arr['error'] = 1;
                         $arr['message'] = array('text'=>'กรุณากรอกข้อมูลที่นั่ง !', 'auto'=>1, 'load'=>1, 'bg'=>'red') ;
                     }
-                    else if( empty($room_total) ){
+                    /*else if( empty($room_total) ){
                         $arr['error'] = 1;
                         $arr['message'] = array('text'=>'กรุณาเลือกห้อง', 'auto'=>1, 'load'=>1, 'bg'=>'red');
-                    }
+                    }*/
                     else if( empty($_POST["customername"]) || empty($_POST["customertel"]) ){
                         $arr['error']['customername'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
                         $arr['error']['customertel'] = 'กรุณากรอกข้อมูลให้ครบถ้วน';
@@ -416,13 +416,13 @@ class Office extends Controller {
                     else if( empty($arr['error']) ){
 
                         if( !empty($_POST['room']['single']) ){
-                            $_SUM['subtotal'] += $_POST['room']['single']*$item['single_charge'];
+                            $_SUM['subtotal'] += $_POST['room']['single']*$per['single_charge'];
                         }
 
                         $comOffice = $per['per_com_company_agency']*$totalQty;
                         $comAgency = $per['per_com_agency']*$totalQty;
 
-                        $extra_discount = 0;
+                        $extra_discount = $_POST["book_discount"];
                         if( $per["per_discount"] > 0 ){
                             $extra_discount = $per["per_discount"] * $totalDis;
                         }
@@ -435,7 +435,7 @@ class Office extends Controller {
 
                         $settings['deposit']['price'] *= $totalQty;
 
-                        /*-- insert: booking --*/
+                        /*-- setData: booking --*/
                         $book = array(
                             "agen_id"=>$_POST['sale'],
                             "user_id"=>$_POST['sale_id'],
@@ -468,6 +468,8 @@ class Office extends Controller {
 
                         if( !empty($id) ){
                             $book["inv_rev_no"] = $item["inv_rev_no"]+1;
+                            $book["update_date"] = date("c");
+                            $book["update_user_id"] = $this->me["id"];
                             $invoice_code = str_replace("B", "", $item["book_code"]);
                             $book["invoice_code"] = "I{$invoice_code}({$book["inv_rev_no"]})";
                             $this->model->query('booking')->update($id, $book);
@@ -493,6 +495,7 @@ class Office extends Controller {
                             $book["invoice_code"] = "I{$year}/{$month}{$running_invoice}";
                             $book["invoice_date"] = date("c");
                             $book["create_date"] = date("c");
+                            $book["create_user_id"] = $this->me["id"];
 
                             $this->model->query('booking')->insert( $book );
 
@@ -560,6 +563,7 @@ class Office extends Controller {
             }
             else{
                 $this->view->setData('status', $this->model->query('booking')->status());
+                $this->view->setData('sales', $this->model->query('booking')->salesLists());
                 $render = "booking/lists/display";
             }
         }

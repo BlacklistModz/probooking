@@ -36,7 +36,7 @@ class Products_Model extends Model{
             
             'time'=> isset($_REQUEST['time'])? $_REQUEST['time']:time(),
             
-            // 'q' => isset($_REQUEST['q'])? $_REQUEST['q']:null,
+            'q' => isset($_REQUEST['q'])? $_REQUEST['q']:null,
 
         ), $options);
 
@@ -78,6 +78,13 @@ class Products_Model extends Model{
             $condition .= !empty($condition) ? " AND " : "";
             $condition .= "s.ser_is_recommend=:recommend";
             $params[":recommend"] = 1;
+        }
+        if( !empty($options["q"]) ){
+            $condition .= !empty($condition) ? " AND " : "";
+            $condition .= "(s.ser_code LIKE :q
+                            OR s.ser_name LIKE :q 
+                            OR c.country_name LIKE :q)";
+            $params[":q"] = "%{$options["q"]}%";
         }
         /*$condition .= !empty($condition) ? " AND " : "";
         $condition .= "s.ser_url_img_1!=:img";

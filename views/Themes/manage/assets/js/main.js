@@ -2565,13 +2565,15 @@ if ( typeof Object.create !== 'function' ) {
 				discount_extra += (input_discount - discount_extra);
 			}
 
-			var subtotal = income-discount;
+			var subtotal = income;
 			if(subtotal < 0) subtotal = 0;
 
 			$.each( self.$listsItem.find("tr"), function(){
 				var ex_total = $(this).find(".js-input-total").val() || 0;
 				subtotal += parseInt(ex_total);
 			});
+
+			subtotal -= discount;
 
 			self.$elem.find('[data-summary=subtotal]').text( PHP.number_format(subtotal) );
 			self.$elem.find('[data-fullpay]').text( PHP.number_format(subtotal-_deposit) );

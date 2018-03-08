@@ -135,7 +135,10 @@ $options = $this->fn->stringify(
 			<input type="hidden" name="bus" value="<?=$this->period['bus_no']?>" autocomplete="off">
 
 			<header class="mbl clearfix">
-				<h1>จัดการจองทัวร์</h1>
+				<h1 class="lfloat">จัดการจองทัวร์</h1>
+                <div class="rfloat gbtn">
+                    <a href="<?=URL?>" data-plugins="dialog" class="btn btn-red" style="color:#fff;"><i class="icon-ban mrs"></i>ยกเลิกการจอง</a>
+                </div>
 			</header>
 
 			<div id="info" class="" style="">
@@ -182,7 +185,6 @@ $options = $this->fn->stringify(
                     </div>
                 </div>
                 
-
                     <div class="span4" >
                         <div class="uiBoxGray pam">
                         <table><tbody>
@@ -246,10 +248,7 @@ $options = $this->fn->stringify(
             						</div>
             					</div>
             				</div>
-
             			</div>
-
-
             		</div>
 
             		<div class="span4">

@@ -74,8 +74,8 @@ define('HASH_GENERAL_KEY', 'MixitUp200');
 // This is for database passwords only
 define('HASH_PASSWORD_KEY', 'catsFLYhigh2000miles');
 
-define('RECAPTCHA_SITE_KEY', '6LeS80MUAAAAAAOzeZ8FzyYxotcnKX4WRBJY3_JO');
-define('RECAPTCHA_SECRET_KEY', '6LeS80MUAAAAAK-iGXEOfuPGy-7CE2TinU7tk7P-');
+define('RECAPTCHA_SITE_KEY', '6LfPBxMTAAAAALX9MpBvvR2sjCKZidyhU-YXYHCY');
+define('RECAPTCHA_SECRET_KEY', '6LfPBxMTAAAAACav7aO-axpuFK6r_fDphq6gAs4i');
 
 // This for word AND pdf 
 define('PATH_TRAVEL', ".." . DS . "admin" . DS . "admin" . DS . "upload" . DS . "travel" . DS);

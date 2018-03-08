@@ -3598,6 +3598,15 @@ table.table-plan td{vertical-align: top;}
 .list-status.s-25{color:#2f80e7}
 
 .list-status.s-30{color:#43d967}
-.list-status.s-35{color:#27c24c}
+.list-status.s-35{color:#1e983b}
 .list-status.s-50{color:#7266ba}
 .list-status.s-55{color:#ff902b}
+
+.table-responsive{
+	overflow-x: auto; 
+	display: block; 
+	width: 100%; 
+	-webkit-overflow-scrolling: touch;  
+	-ms-overflow-style: 
+	-ms-autohiding-scrollbar;
+}

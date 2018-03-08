@@ -8,6 +8,8 @@ if( !empty($this->item) ){
 }
 $arr['hiddenInput'][] = array('name'=>'book_id', 'value'=>$this->book['book_id']);
 
+
+
 $form = new Form();
 $form = $form ->create()
 			  ->elem('div')
@@ -47,20 +49,20 @@ $form 	->field("pay_date")
 		->attr('data-plugins', 'datepicker')
 		->type('date')
 		->autocomplete('off')
-		->value( !empty($this->item['pay_date']) ? $this->item['pay_date'] : '' );
+		->value( !empty($this->item['date']) ? date("Y-m-d", strtotime($this->item['date'])) : '' );
 
 $form 	->field("pay_time")
 		->label("เวลา*")
 		->addClass("inputtext")
 		->autocomplete("off")
-		->value( !empty($this->item["pay_time"]) ? $this->item["pay_time"] : "" );
+		->value( !empty($this->item["time"]) ? $this->item["time"] : "" );
 
 $form 	->field("pay_received")
 		->label("จำนวนเงิน*")
 		->addClass("inputtext")
 		->type('number')
 		->autocomplete("off")
-		->value( !empty($this->item["pay_received"]) ? $this->item["pay_received"] : 0 );
+		->value( !empty($this->item["received"]) ? round($this->item["received"]) : 0 );
 
 $form 	->field("pay_url_file")
 		->label("ไฟล์อ้างอิง")

@@ -42,6 +42,17 @@
 						?>
 					</select>
 				</li>
+				<li>
+					<label for="sales" class="label">Sales</label>
+					<select ref="selector" name="sales" class="inputtext">
+						<option value="">- ทั้งหมด -</option>
+						<?php 
+						foreach ($this->sales as $key => $value) {
+							echo '<option value="'.$value["id"].'">'.$value["name"].'</option>';
+						}
+						?>
+					</select>
+				</li>
 			</ul>
 			<ul class="rfloat" ref="control">
 				<li class="mt"><form class="form-search" action="#">
