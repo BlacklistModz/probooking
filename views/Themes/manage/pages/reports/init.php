@@ -36,3 +36,10 @@ if( !empty($sub) ){
 	$this->count_nav+=count($sub);
 	$menu[] = array('text'=>'Recevied Monitor', 'url'=>$this->pageURL.'reports/monitor', 'sub'=>$sub);
 }
+
+$sub = array();
+$sub[] = array('text'=>'Team Sale Monitor', 'key'=>'teams', 'url'=>$this->pageURL.'reports/sales/teams');
+if( !empty($sub) ){
+	$this->count_nav+=count($sub);
+	$menu[] = array('text'=>'Team Sales', 'url'=>$this->pageURL.'reports/sales', 'sub'=>$sub);
+}

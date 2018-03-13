@@ -23,6 +23,7 @@ if( !empty($sub) ){
 $sub = array();
 $sub[] = array('text'=> 'Users','key'=>'users','url'=>$this->pageURL.'settings/users');
 $sub[] = array('text'=> 'User Roles','key'=>'group','url'=>$this->pageURL.'settings/users/group');
+$sub[] = array('text'=> 'Team Sale','key'=>'teams','url'=>$this->pageURL.'settings/users/teams');
 // $sub[] = array('text'=> $this->lang->translate('User Roles'),'key'=>'roles','url'=>$this->pageURL.'settings/users/roles');
 
 /* foreach ($sub as $key => $value) {

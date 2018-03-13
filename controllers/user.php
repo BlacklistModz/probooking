@@ -15,6 +15,7 @@ class User extends Controller {
     	if( $this->format!='json' ) $this->error();
 
     	$this->view->setData('group', $this->model->group());
+        $this->view->setData('team', $this->model->query('teams')->lists());
     	$this->view->setPage('path', 'Themes/manage/forms/users');
     	$this->view->render('add');
     }
@@ -27,6 +28,7 @@ class User extends Controller {
 
     	$this->view->setData('item', $item);
     	$this->view->setData('group', $this->model->group());
+        $this->view->setData('team', $this->model->query('teams')->lists());
     	$this->view->setPage('path', 'Themes/manage/forms/users');
     	$this->view->render('add');
     }
@@ -50,6 +52,7 @@ class User extends Controller {
                     ->post('user_address')
                     ->post('user_name')->val('username')
                     ->post('group_id')->val('is_empty')
+                    ->post('user_team_id')
                     ->post('status');
             $form->submit();
             $postData = $form->fetch();

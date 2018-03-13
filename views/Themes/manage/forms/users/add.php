@@ -79,6 +79,13 @@ $form 	->field("group_id")
 		->select( $this->group )
 		->value( !empty($this->item['group_id']) ? $this->item['group_id'] : '' );
 
+$form 	->field("user_team_id")
+		->label("ทีม")
+		->addClass('inputtext')
+		->autocomplete('off')
+		->select( $this->team['lists'] )
+		->value( !empty($this->item['team_id']) ? $this->item['team_id'] : '' );
+
 $status_01 = "";
 $status_02 = "";
 if( !empty($this->item['status']) ){

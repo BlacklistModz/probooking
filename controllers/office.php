@@ -47,10 +47,14 @@ class Office extends Controller {
                 else{
                     $this->view->setData('status', $this->model->query('user')->status());
                     $this->view->setData('group', $this->model->query('user')->group());
+                    $this->view->setData('teams', $this->model->query('teams')->lists());
                 }
             }
             elseif( $tap == 'group' ){
                 $this->view->setData('data', $this->model->query('user')->group());
+            }
+            elseif( $tap == 'teams' ){
+                $this->view->setData('data', $this->model->query('teams')->lists());
             }
         }
         // elseif( $section == 'agency' ){
@@ -138,6 +142,14 @@ class Office extends Controller {
             $this->view->setData('tap', "monitor");
             $this->view->setData('status', $this->model->query('products')->periodStatus());
             $this->view->setData('country', $this->model->query('products')->categoryList());
+        }
+        elseif( $section == "sales" ){
+            if( empty($tap) ) $tap = "teams";
+            $this->view->setData('tap', $tap);
+            if( $tap == "teams" ){
+                $this->view->setData('country', $this->model->query('products')->categoryList());
+                $this->view->setData('teams', $this->model->query('teams')->lists( array('sort'=>'name', 'dir'=>'ASC') ));
+            }
         }
         else{
             $this->error();

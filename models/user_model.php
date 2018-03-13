@@ -49,6 +49,9 @@ class User_Model extends Model{
         if( isset($_REQUEST["status"]) ){
             $options["status"] = $_REQUEST["status"];
         }
+        if( isset($_REQUEST["team"]) ){
+            $options["team"] = $_REQUEST["team"];
+        }
         if( !empty($options["group"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";
             $where_str .= "u.group_id=:group";
@@ -58,6 +61,11 @@ class User_Model extends Model{
             $where_str .= !empty($where_str) ? " AND " : "";
             $where_str .= "status=:status";
             $where_arr[":status"] = $options["status"];
+        }
+        if( !empty($options["team"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "u.user_team_id=:team";
+            $where_arr[":team"] = $options["team"];
         }
         if( !empty($options["q"]) ){
             $where_str .= !empty($where_str) ? " AND " : "";

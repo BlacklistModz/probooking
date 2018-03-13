@@ -147,6 +147,36 @@ class Reports extends Controller {
         $this->view->setPage('path', 'Themes/manage/pages/reports/sections/monitor/json');
         $this->view->render('json');
     }
+    public function reportTeamSale(){
+        $month = isset($_REQUEST["month"]) ? $_REQUEST["month"] : null;
+        $year = isset($_REQUEST['year']) ? $_REQUEST['year'] : date("Y");
+        $team = isset($_REQUEST["team"]) ? $_REQUEST["team"] : null;
+        $sale = isset($_REQUEST["sale"]) ? $_REQUEST["sale"] : null;
+        $country = isset($_REQUEST["country"]) ? $_REQUEST["country"] : null;
+
+        if( !empty($month) ){
+            $start = date("Y-m-d", strtotime("{$year}-{$month}-01"));
+            $end = date("Y-m-t", strtotime("{$year}-{$month}-01"));
+        }
+        else{
+            $start = date("Y-m-d", strtotime("{$year}-01-01"));
+            $end = date("Y-m-t", strtotime("{$year}-12-01"));
+        }
+
+        $options = array(
+            'start' => $start,
+            'end' => $end,
+            'team' => $team,
+            'sale' => $sale,
+            'country' => $country
+        );
+
+        $results = $this->model->listsTeamSale( $options );
+        $this->view->setData('results', $results);
+        $this->view->setData('team', $this->model->query('teams')->lists( array('sort'=>'name', 'dir'=>'ASC') ));
+        $this->view->setPage('path','Themes/manage/pages/reports/sections/sales/json');
+        $this->view->render('teams');
+    }
 
     /* GET DATA JSON */
     public function getProducts($country_id=null){
@@ -157,5 +187,10 @@ class Reports extends Controller {
         $com_id = isset($_REQUEST["com_id"]) ? $_REQUEST["com_id"] : $com_id;
         if( empty($com_id) || $this->format!='json' ) $this->error();
         echo json_encode($this->model->listsAgency( $com_id ));
+    }
+    public function getSaleTeam($team_id=null){
+        $team_id = isset($_REQUEST["team_id"]) ? $_REQUEST["team_id"] : $team_id;
+        if( $this->format!='json' ) $this->error();
+        echo json_encode($this->model->listsSaleTeam( $team_id ));
     }
 }

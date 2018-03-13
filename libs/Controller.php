@@ -162,9 +162,9 @@ class Controller {
         if( $this->pathName == 'office' && Cookie::get( COOKIE_KEY_AGENCY ) ){
             Cookie::clear( COOKIE_KEY_AGENCY );
         }
-        if( $this->pathName == 'index' && Cookie::get( COOKIE_KEY_ADMIN ) ){
-            Cookie::clear( COOKIE_KEY_ADMIN );
-        }
+        // if( $this->pathName == 'index' && Cookie::get( COOKIE_KEY_ADMIN ) ){
+        //     Cookie::clear( COOKIE_KEY_ADMIN );
+        // }
 
         if( Cookie::get( COOKIE_KEY_ADMIN ) ){
             $me = $this->model->query('user')->get( Cookie::get( COOKIE_KEY_ADMIN ) );
@@ -175,8 +175,7 @@ class Controller {
 
         if( $this->pathName == 'office' && !empty($me) ){
             if( $me["status"] != 1 && !empty($me['group_id']) ) {
-                $me = array();
-                Cookie::clear( COOKIE_KEY_ADMIN );
+                $this->login();
             }
         }
 

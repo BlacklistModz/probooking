@@ -16,6 +16,12 @@
 
 
 <?php 
+$contact = '';
+if( !empty($this->me) ){
+	$contact = '<li class="phone"><a><i class="icon-phone"></i><span>02-9358550</span></a></li>
+		<li class="line"><a><i class="icon-line"></i><span>jitwilai-wholesale</span></a></li>';
+}
+
 echo '<div class="elevator-wrapper" data-action="backtotop"><div class="elevator icon-arrow-up"></div></div>';
 
 echo '<div class="elevator-wrapper contact" data-action="getcontact"><div class="elevator icon-commenting-o"></div></div>';
@@ -24,8 +30,7 @@ echo '<div class="elevator-wrapper contact" data-action="getcontact"><div class=
 echo '<div class="elevator-contact">'.
 	'<div class="elevator-contact-header clearfix" data-action="getcontact"><h3 class="lfloat">ติดต่อ</h3><a class="rfloat"><i class="icon-remove"></i></a></div>'.
 	'<ul class="footer-contact">'.
-		'<li class="phone"><a><i class="icon-phone"></i><span>02-9358550</span></a></li>'.
-		'<li class="line"><a><i class="icon-line"></i><span>jitwilai-wholesale</span></a></li>'.
+		$contact.
 		'<li class="email"><a><i class="icon-envelope-o"></i><span>saleprobooking@gmail.com</span></a></li>'.
 		'<li class="facebook"><a><i class="icon-facebook"></i><span>probookingcenter</span></a></li>'.
 		'<li class="map"><a><i class="icon-map"></i><span>Google Map</span></a></li>'.

@@ -2669,6 +2669,74 @@ if ( typeof Object.create !== 'function' ) {
 		});
 	};
 	$.fn.bookingForm.options = {};
+
+	var reportTeamSale = {
+		init: function(options, elem) {
+			var self = this;
+			self.elem = elem;
+			self.$elem = $(elem);
+
+			self.options = $.extend( {}, $.fn.bookingForm.options, options );
+
+			self.$country = self.$elem.find('[name=country_id]');
+			self.$team = self.$elem.find('[name=team]');
+			self.$sale = self.$elem.find('[name=sale]');
+
+			self.$submit = self.$elem.find('.js-search');
+
+			self.setElem();
+			self.Event();
+		},
+		setElem: function(){
+			var self = this;
+		},
+		Event: function(){
+			var self = this;
+
+			self.$team.change(function(){
+				self.setSale();
+			});
+
+			self.$submit.click(function(){
+				self.setContent();
+			});
+		},
+		setSale: function(){
+			var self = this;
+			var team = self.$team.val();
+			$.get( Event.URL + 'reports/getSaleTeam/' + team, function(res){
+				self.$sale.empty();
+				self.$sale.append( $('<option>', {value:"", text:"- ทั้งหมด -"}) );
+				$.each(res, function(i,obj){
+					self.$sale.append( $('<option>', {value:obj.id, text:obj.nickname}) );
+				});
+			},'json');
+		},
+		setContent: function(){
+			var self = this;
+
+			self.$elem.find("#reportTeamSale").html( '<div class="tac"><div class="loader-spin-wrap" style="display:inline-block;"><div class="loader-spin"></div></div></div>' );
+
+			var month = self.$elem.find("[name=month]").val();
+			var year = self.$elem.find("[name=year]").val();
+			var country = self.$country.val();
+			var team = self.$team.val();
+			var sale = self.$sale.val();
+
+			$.get( Event.URL + 'reports/reportTeamSale/', {month:month, year:year, country:country, team:team, sale:sale}, function(html){
+				self.$elem.find('#reportTeamSale').html( html );
+			} );
+		}
+	}
+	$.fn.reportTeamSale = function( options ) {
+		return this.each(function() {
+			var $this = Object.create( reportTeamSale );
+			$this.init( options, this );
+			$.data( this, 'reportTeamSale', $this );
+		});
+	};
+	$.fn.reportTeamSale.options = {};
+
 	
 })( jQuery, window, document );
 
