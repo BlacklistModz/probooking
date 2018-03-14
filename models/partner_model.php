@@ -114,6 +114,15 @@ class Partner_Model extends Model{
             $where_arr[":status"] = $options["status"];
         }
 
+        if( isset($_REQUEST["geo"]) ){
+            $options["geo"] = $_REQUEST["geo"];
+        }
+        if( !empty($options["geo"]) ){
+            $where_str .= !empty($where_str) ? " AND " : "";
+            $where_str .= "agen_com_geo=:geo";
+            $where_arr[":geo"] = $options["geo"];
+        }
+
         $arr['total'] = $this->db->count($this->c_table, $where_str, $where_arr);
 
         $limit = $this->limited( $options['limit'], $options['pager'] );

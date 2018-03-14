@@ -499,6 +499,7 @@ class Reports_Model extends Model{
 
         /* SET VARIBLE FOR TOTAL */
         $data['total'] = 0;
+        $data['seat'] = 0;
 
         /* CONDITION FOR SALE LIST */
         $w = "(user_team_id != 0)";
@@ -566,7 +567,7 @@ class Reports_Model extends Model{
             }
 
             $where_str .= !empty($where_str) ? " AND " : "";
-            $where_str .= "book.status IN (20,25,30,35) AND book.user_id=:sale AND blist.book_list_code IN (1,2,3) AND pay.status=1";
+            $where_str .= "book.status != 40 AND book.user_id=:sale AND blist.book_list_code IN (1,2,3) AND pay.status=1";
             $where_arr[":sale"] = $value["user_id"];
 
             $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";

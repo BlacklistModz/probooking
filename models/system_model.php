@@ -249,7 +249,7 @@ class System_Model extends Model{
     }
 
     public function geo(){
-        return $this->db->select("SELECT GEO_ID AS id, GEO_NAME AS name FROM geography");
+        return $this->db->select("SELECT GEO_ID AS id, GEO_NAME AS name FROM geography ORDER BY GEO_NAME ASC");
     }
     public function province(){
         return $this->db->select("SELECT PROVINCE_ID AS id, PROVINCE_NAME AS name FROM province");
