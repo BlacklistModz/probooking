@@ -254,6 +254,7 @@ class Office extends Controller {
             /* SET ITEM */
             if( !empty($id) ){
                 $item = $this->model->query('booking')->get($id, array('payment'=>true, 'room'=>true));
+                
                 if( empty($item) ) $this->error();
                 $this->view->setData("item", $item);
 
@@ -590,6 +591,7 @@ class Office extends Controller {
         if( empty($period) || empty($bus) ) $this->error();
 
         $booking = $this->model->query("booking")->lists( array("period"=>$period, "bus"=>$bus, "room"=>true) );
+        print_r($booking);die;
         $this->view->setData("booking", $booking);
         $this->view->render( "booking/forms/room_detail" );
     }

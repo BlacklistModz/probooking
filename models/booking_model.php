@@ -470,7 +470,7 @@ class Booking_Model extends Model {
 
         $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
 
-        $sql = "SELECT {$this->_roomSelect} FROM {$this->_roomTable} {$where_str}";
+        $sql = "SELECT {$this->_roomSelect} FROM {$this->_roomTable} {$where_str}  ORDER BY room_id DESC";
         return $this->buildFragRoom( $this->db->select($sql, $where_arr) );
     }
     public function buildFragRoom( $results, $options=array() ){
