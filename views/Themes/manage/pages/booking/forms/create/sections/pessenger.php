@@ -76,14 +76,11 @@ input.inputtext.prename{
 								<th width="5%">Birthday*</th>
 								<th width="5%">Passport No.*</th>
 								<th width="5%">Expire*</th>
-								<th width="5%">File</th>
-								<th width="5%">Upload</th>
 								<th width="5%">อาชีพ</th>
 								<th width="5%">จัดหวัดที่เกิด</th>
 								<th width="5%">สถานที่ออก pp</th>
 								<th width="5%">วันที่ออก pp</th>
 								<th>
-									
 									<table>
 										<thead>
 											<tr><span class="tac">Food</span></tr>
@@ -92,6 +89,7 @@ input.inputtext.prename{
 											<tr>
 												<td>No seafood</td>
 												<td>No Chicken</td>
+                                                <td>No Pork</td>
 												<td>No Beef</td>
 												<td>Vegetarian</td>
 											</tr>
@@ -102,13 +100,11 @@ input.inputtext.prename{
 								<table>
 										<thead>
 											<tr><span class="tac">Seat</span></tr>
-										<thead>
-										<tbody>
-											<tr>
-												<td>Bussiness Class</td>
-												<td>Hot Seat</td>
+                                            <tr>
+												<td style="padding:8px 15px 8px 15px">BC.</td>
+												<td style="padding:10px 15px 10px 15px;">HS.</td>
 											</tr>
-										</tbody>
+										</thead>
 									</table>
 								</th>
 								<th>
@@ -131,10 +127,10 @@ input.inputtext.prename{
 									<tr><span>Other</span></tr>
 									<thead>
 									 <tr>
-									 <td>Wifi</td>
-									 <td>Sim</td>
-									 <td>Disney Ticket</td>
-									 <td>Other Extend</td>
+									 <th>Wifi</th>
+									 <th>Sim</th>
+									 <th>Disney Ticket</th>
+									 <th>Remark</th>
 									 </tr>
 									</thead>
 									</table>
@@ -190,48 +186,81 @@ input.inputtext.prename{
 										</select>
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[country][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["country"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[country][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["country"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[nationality][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["nationality"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[nationality][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["nationality"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[address][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["address"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[address][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["address"] : "" ?>">
 									</td>
 									<td>
-										<input type="date" class="inputtext" data-plugins="datepicker" name="room[birthday][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["birthday"])) : "" ?>">
+										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[birthday][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["birthday"])) : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[passportno][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["passportno"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[passportno][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["passportno"] : "" ?>">
 									</td>
 									<td>
-										<input type="date" class="inputtext" data-plugins="datepicker" name="room[expire][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["expire"])) : "" ?>">
+										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[expire][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["expire"])) : "" ?>">
 									</td>
-									<td class="tac">
-										<span class="gbtn">
-											<a href="" class="btn btn-blue btn-no-padding"><i class="icon-cloud-download"></i></a>
-										</span>
-									</td>
-									<td class="tac">
-										<span class="gbtn">
-											<a href="<?=URL?>booking/upload_passport/<?=$this->item["book_id"]?>" data-plugins="dialog" class="btn btn-green btn-no-padding"><i class="icon-cloud-upload"></i></a>
-										</span>
+								
+									<td>
+										<input type="text" class="inputtext" name="pess[career][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["career"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[career][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["career"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[placeofbirth][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["placeofbirth"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[placeofbirth][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["placeofbirth"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[place_pp][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["place_pp"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[place_pp][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["place_pp"] : "" ?>">
+										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
 									</td>
 									<td>
-										<input type="date" class="inputtext" data-plugins="datepicker" name="room[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
+                                    <table>
+										<tbody>
+											<tr>
+												<td><label style="padding:0 15px 0 28px;" class="checkbox"><input type="checkbox" name="pess[pess_no_sf][]"/></label></td></label>
+												<td><label style="padding:0 10px 0 29px;" class="checkbox"><input type="checkbox" name="pess[pess_no_ck][]"/></label></td></label>
+												<td><label style="padding:0 5px 0 10px;" class="checkbox"><input type="checkbox"  name="pess[pess_no_pk][]"/></label></td></label>
+                                                <td><label style="padding:0 0px 0 20px;" class="checkbox"><input type="checkbox" name="pess[pess_no_bf][]"/></label></td></label>
+                                                <td><label style="padding:0 25px 0 31px;" class="checkbox"><input type="checkbox" name="pess[pess_vet][]"/></label></td></label>
+											</tr>
+										</tbody>
+									</table>
 									</td>
-									<td>
-										<input type="date" class="inputtext"  name="room[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
-									</td>
+                                    <td>
+                                    <table>
+										<tbody>
+											<tr>
+												<td> <input style="width:72px; height:32px;" type="text" name="pess[pess_bc][]"/></td></label>
+												<td><input style="width:32px; height:32px;</width:32>px;" type="text" name="pess[pess_hc][]"/></td></label>
+											</tr>
+										</tbody>
+									</table>
+                                    </td>
+                                    <td>
+                                    <table>
+										<tbody>
+											<tr>
+												<td><label style="padding:0 25px 0 35px;" class="checkbox"><input type="checkbox" name="pess[pess_bagges_departure][]"  /></label></td></label>
+												<td><label style="padding:0 15px 0 23px;" class="checkbox"><input type="checkbox" name="pess[pess_bagges_return][]"  /></label></td></label>
+											</tr>
+										</tbody>
+									</table>
+                                    </td>
+                                    <td>
+                                    <table>
+										<tbody>
+											<tr>
+												<td><label style="padding:0 4px 0 5px;" class="checkbox"><input type="checkbox"  name="pess[pess_wifi][]"  /></label></li></td></label>
+												<td><label style="padding:0 5px 0 2px;" class="checkbox"><input type="checkbox" name="pess[pess_sim][]"  /></label></li></td></label>
+                                                <td><label style="padding:0 15px 0 20px;" class="checkbox"><input type="checkbox" name="pess[pess_disney][]"  /></label></li></td></label>
+												<td><label style="padding:0 15px 0 23px;" class="checkbox"><input type="checkbox" name="pess[pess_other][]" /></label></li></td></label>
+											</tr>
+										</tbody>
+									</table>
+                                    </td>
 								</tr>
 								<?php 
 								$n++;

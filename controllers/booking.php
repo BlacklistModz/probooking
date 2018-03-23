@@ -59,7 +59,7 @@
             ),
             
         );
-
+        
         $DayOfGo = $this->fn->q('time')->DateDiff( date("Y-m-d"), $item['per_date_start'] );
         if( $DayOfGo > 31 ){ //32 day
             $settings['deposit']['date'] = date("Y-m-d 18:00", strtotime("+2 day"));

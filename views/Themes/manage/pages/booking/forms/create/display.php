@@ -7,10 +7,10 @@
 		<div role="toolbar"><?php include "toolbar/display.php"; ?></div>
 		<!-- End: toolbar -->
 		<?php } ?>
-
+			
 		<div role="main"><div class="profile-content"><?php include "sections/{$this->sections}.php"; ?></div></div>
 		<!-- end: main -->
-
+			
 	</div>
 	<!-- end: content -->
 

@@ -110,6 +110,7 @@ class Office extends Controller {
                 $this->view->setData('sales', $this->model->query('agency_company')->saleLists());
                 $this->view->setData('company', $this->model->query('agency_company')->lists( array('unlimit'=>true, 'status'=>1,'sort'=>'com_name') ));
                 $this->view->setData('status', $this->model->query('booking')->status());
+              
             }else if($tap =="monthy"){
                
                 $this->view->setData('country', $this->model->query('products')->categoryList());
@@ -559,8 +560,12 @@ class Office extends Controller {
             }
             elseif( $sections == "room" ){
                 $this->view->setPage('title', 'ข้อมูลผู้เดินทาง');
+                
                 if( empty($item) ) header("location:".URL."office/booking/basic");
 
+            }elseif($sections =='pessenger'){
+                $this->view->setPage('title', 'ข้อมูลผู้เดินทาง');
+                if( empty($item) ) header("location:".URL."office/booking/basic");
             }
             else{
                 $this->error();

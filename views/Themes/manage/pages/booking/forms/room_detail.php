@@ -27,7 +27,7 @@
 				<table class="table-bordered" width="100%">
 					<thead>
 						<tr>
-							<th>asdf</th>
+							<th>helloword</th>
 						</tr>
 					</thead>
 				</table>

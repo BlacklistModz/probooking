@@ -12,7 +12,7 @@
 		<div class="setting-main" role="main"><?php
 
 			if( !empty($this->section) ){
-
+			
 				if( !empty($this->tap) ){
 					require_once "sections/{$this->section}/{$this->tap}.php";
 				}
