@@ -254,11 +254,9 @@ class Office extends Controller {
         if( !empty($sections) ){
             /* SET ITEM */
             if( !empty($id) ){
-                $item = $this->model->query('booking')->get($id, array('payment'=>true, 'room'=>true));
-                
+                $item = $this->model->query('booking')->get($id, array('payment'=>true, 'room'=>true, 'pessenger'=>true));
                 if( empty($item) ) $this->error();
                 $this->view->setData("item", $item);
-
                 $period = $item["per_id"];
                 $bus = $item["bus_no"];
             }
@@ -323,7 +321,7 @@ class Office extends Controller {
                 $settings['trave']['date'] = date('Y-m-d', strtotime("-1 day", strtotime($settings['trave']['date'])));
 
                 if( !empty($_POST) ){
-
+                    
                     $_items = array();
                     if( !empty($item) ){
                         $availableSeat += $item["book_qty"];
@@ -480,6 +478,7 @@ class Office extends Controller {
                         );
 
                         if( !empty($id) ){
+                            //update booking
                             $book["inv_rev_no"] = $item["inv_rev_no"]+1;
                             $book["update_date"] = date("c");
                             $book["update_user_id"] = $this->me["id"];
@@ -487,6 +486,9 @@ class Office extends Controller {
                             $book["invoice_code"] = "I{$invoice_code}({$book["inv_rev_no"]})";
                             $this->model->query('booking')->update($id, $book);
                             $bookCode = $item["book_code"];
+                            
+
+                            
                         }
                         else{
                             /*-- get: prefixnumber --*/
@@ -607,6 +609,8 @@ class Office extends Controller {
             }elseif($sections =='pessenger'){
                 $this->view->setPage('title', 'ข้อมูลผู้เดินทาง');
                 if( empty($item) ) header("location:".URL."office/booking/basic");
+                if( empty($item['pessenger']) ) header("location:".URL."office/booking/room/{$id}");
+                
             }
             else{
                 $this->error();

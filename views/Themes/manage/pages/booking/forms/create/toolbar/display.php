@@ -4,7 +4,7 @@
 <div class="profile-toolbar profile-toolbar-mg">
 		
 	<nav class="profile-actions-toolbar clearfix tab-action"><?php
-
+	
 		foreach ($this->menu as $key => $value) {
 
 			$icon = !empty($value['icon']) ? '<i class="icon-'.$value['icon'].' mrs"></i>':'';

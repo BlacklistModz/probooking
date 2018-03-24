@@ -1,3 +1,5 @@
+@@ -1 +1,196 @@
+room.php
 <?php
 $sex[] = array('id'=>1, 'name'=>'M');
 $sex[] = array('id'=>2, 'name'=>'F');
@@ -63,7 +65,7 @@ input.inputtext.prename{
 					<table class="table-bordered table-responsive">
 						<thead>
 							<tr class="<?=$value["cls"]?>">
-								<th width="5%">No.</th>
+								<th width="5%">#</th>
 								<th width="5%">Room</th>
 								<th width="5%">Prename*</th>
 								<th width="5%">Firstname*</th>
@@ -71,74 +73,18 @@ input.inputtext.prename{
 								<th width="5%">Fullname THAI*</th>
 								<th width="5%">Sex*</th>
 								<th width="5%">Country*</th>
-								<th width="5%">Nationality*</th>
+								<th width="5%">National*</th>
 								<th width="5%">Address in Thailand*</th>
 								<th width="5%">Birthday*</th>
 								<th width="5%">Passport No.*</th>
 								<th width="5%">Expire*</th>
 								<th width="5%">File</th>
+								<th width="5%">Remark</th>
 								<th width="5%">Upload</th>
 								<th width="5%">อาชีพ</th>
 								<th width="5%">จัดหวัดที่เกิด</th>
 								<th width="5%">สถานที่ออก pp</th>
 								<th width="5%">วันที่ออก pp</th>
-								<th>
-									
-									<table>
-										<thead>
-											<tr><span class="tac">Food</span></tr>
-										<thead>
-										<tbody>
-											<tr>
-												<td>No seafood</td>
-												<td>No Chicken</td>
-												<td>No Beef</td>
-												<td>Vegetarian</td>
-											</tr>
-										</tbody>
-									</table>
-								</th>
-								<th>
-								<table>
-										<thead>
-											<tr><span class="tac">Seat</span></tr>
-										<thead>
-										<tbody>
-											<tr>
-												<td>Bussiness Class</td>
-												<td>Hot Seat</td>
-											</tr>
-										</tbody>
-									</table>
-								</th>
-								<th>
-									<table>
-										<thead>
-										<tr>
-											<span>Bagges</span>
-										</tr>
-										</thead>
-										<tbody>
-										<tr>
-											<td>Departure  kg</td>
-											<td>Return  kg</td>
-										</tr>
-										</tbody>	
-									</table>
-								</th>
-								<th>
-									<table>
-									<tr><span>Other</span></tr>
-									<thead>
-									 <tr>
-									 <td>Wifi</td>
-									 <td>Sim</td>
-									 <td>Disney Ticket</td>
-									 <td>Other Extend</td>
-									 </tr>
-									</thead>
-									</table>
-								</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -212,6 +158,9 @@ input.inputtext.prename{
 											<a href="" class="btn btn-blue btn-no-padding"><i class="icon-cloud-download"></i></a>
 										</span>
 									</td>
+									<td>
+										<input type="text" class="inputtext" name="room[remark][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["remark"] : "" ?>">
+									</td>
 									<td class="tac">
 										<span class="gbtn">
 											<a href="<?=URL?>booking/upload_passport/<?=$this->item["book_id"]?>" data-plugins="dialog" class="btn btn-green btn-no-padding"><i class="icon-cloud-upload"></i></a>
@@ -228,9 +177,6 @@ input.inputtext.prename{
 									</td>
 									<td>
 										<input type="date" class="inputtext" data-plugins="datepicker" name="room[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
-									</td>
-									<td>
-										<input type="date" class="inputtext"  name="room[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
 									</td>
 								</tr>
 								<?php 

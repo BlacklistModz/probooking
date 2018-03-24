@@ -8,11 +8,15 @@ $room[] = array('key'=>'book_room_triple', 'text'=>'Triple', 'count'=>3, 'cls'=>
 $room[] = array('key'=>'book_room_single', 'text'=>'Single', 'count'=>1, 'cls'=>'bg-warning-dark');
 
 $data = array();
-if( !empty($this->item["room"]) ){
-	foreach ($this->item["room"] as $key => $value) {
-		$data[$value["type"]][] = $value;
+
+if( !empty($this->item["pessenger"]) ){
+	foreach ($this->item["pessenger"] as $key => $value) {
+		$data[$value["room_type"]][] = $value;
+		
 	}
+	
 }
+
 ?>
 <style type="text/css">
 .inputtext{
@@ -54,7 +58,7 @@ input.inputtext.prename{
 				</span>
 			</li>
 		</ul>
-		<form class="js-submit-form" action="<?=URL?>booking/setRoom/<?=$this->item["book_id"]?>">
+		<form class="js-submit-form" action="<?=URL?>booking/setPessenger/<?=$this->item["book_id"]?>">
 			<?php foreach ($room as $key => $value) { 
 				if( empty($this->item[$value["key"]]) ) continue;
 				?>
@@ -65,7 +69,7 @@ input.inputtext.prename{
 							<tr class="<?=$value["cls"]?>">
 								<th width="5%">No.</th>
 								<th width="5%">Room</th>
-								<th width="5%">Prename*</th>
+								<th width="5%">Title*</th>
 								<th width="5%">Firstname*</th>
 								<th width="5%">Lastname*</th>
 								<th width="5%">Fullname THAI*</th>
@@ -141,39 +145,41 @@ input.inputtext.prename{
 							<?php
 							$count = $value["count"] * $this->item[$value["key"]]; 
 							$type = strtolower($value["text"]);
+					
 							$n=0;
 							for($i=1;$i<=$count;$i++){ 
 								?>
 								<tr>
 									<td class="tac"><span class="mrs mls"><?=$i?>.</span></td>
 									<td>
-										<select class="inputtext" name="room[no][]">
+										</select>
+										<select class="inputtext" name="room[room_no][]">
 											<?php 
 											for($j=1; $j<=$this->item[$value["key"]]; $j++){
 												$sel = '';
 												if( !empty($data[$type][$n]) ){
-													if( $data[$type][$n]["no"] == $j ) $sel = ' selected="1"';
+													if( $data[$type][$n]["room_no"] == $j ) $sel = ' selected="1"';
 												}
 												echo '<option'.$sel.' value="'.$j.'">'.$value["text"].'-'.$j.'</option>';
 											}
 											?>
 										</select>
-										<input type="hidden" name="room[type][]" value="<?=$type?>">
+										<input type="hidden" name="room[room_type][]" value="<?=$type?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext prename" name="room[prename][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["prename"] : "" ?>">
+										<input type="text" class="inputtext prename" name="pess[title][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["title"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[fname][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["fname"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[fname][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["fname"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[lname][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["lname"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[lname][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["lname"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="room[name_thai][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["name_thai"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[name_thai][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["name_thai"] : "" ?>">
 									</td>
 									<td>
-										<select class="inputtext sex" name="room[sex][]">
+										<select class="inputtext sex" name="pess[sex][]">
 											<?php 
 											foreach ($sex as $_sex) {
 												$sel = "";
@@ -208,10 +214,10 @@ input.inputtext.prename{
 										<input type="text" class="inputtext" name="pess[career][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["career"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="pess[placeofbirth][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["placeofbirth"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[pob][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["pob"] : "" ?>">
 									</td>
 									<td>
-										<input type="text" class="inputtext" name="pess[place_pp][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["place_pp"] : "" ?>">
+										<input type="text" class="inputtext" name="pess[popp][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["popp"] : "" ?>">
 									</td>
 									<td>
 										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
@@ -242,8 +248,8 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td><input style="width:40px; height:32px;" required="1" type="number" name="pess[pess_bagges_departure][]"/></td>
-												<td><input style="width:50px; height:32px;" required="1" type="number" name="pess[pess_bagges_return][]"/></td>
+												<td><input style="width:40px; height:32px;"  type="number" name="pess[pess_bagges_departure][]"/></td>
+												<td><input style="width:50px; height:32px;"  type="number" name="pess[pess_bagges_return][]"/></td>
 											</tr>
 										</tbody>
 									</table>
