@@ -87,7 +87,7 @@ input.inputtext.prename{
 										<thead>
 										<tbody>
 											<tr>
-												<td>No seafood</td>
+												<td class="tac">No Seafood</td>
 												<td>No Chicken</td>
                                                 <td>No Pork</td>
 												<td>No Beef</td>
@@ -116,8 +116,8 @@ input.inputtext.prename{
 										</thead>
 										<tbody>
 										<tr>
-											<td>Departure  kg</td>
-											<td>Return  kg</td>
+											<td>ขาไป <br>(kg)</td>
+											<td>ขากลับ <br>(kg)</td>
 										</tr>
 										</tbody>	
 									</table>
@@ -129,8 +129,8 @@ input.inputtext.prename{
 									 <tr>
 									 <th>Wifi</th>
 									 <th>Sim</th>
-									 <th>Disney Ticket</th>
-									 <th>Remark</th>
+									 <th class="tac" width="100px;">Ticket</th>
+									 <th style="height:40px;" class="tac" width="300px;">Remark</th>
 									 </tr>
 									</thead>
 									</table>
@@ -233,8 +233,17 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td> <input style="width:72px; height:32px;" type="text" name="pess[pess_bc][]"/></td></label>
-												<td><input style="width:32px; height:32px;</width:32>px;" type="text" name="pess[pess_hc][]"/></td></label>
+												<td> <input style="width:72px; height:32px;" type="text" name="pess[pess_bc][]"/></td>
+												<td><input style="width:32px; height:32px;</width:32>px;" type="text" name="pess[pess_hc][]"/></td>
+										</tbody>
+									</table>
+                                    </td>
+                                    <td>
+                                    <table>
+										<tbody>
+											<tr>
+												<td><input style="width:40px; height:32px;" required="1" type="number" name="pess[pess_bagges_departure][]"/></td>
+												<td><input style="width:50px; height:32px;" required="1" type="number" name="pess[pess_bagges_return][]"/></td>
 											</tr>
 										</tbody>
 									</table>
@@ -243,20 +252,10 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td><label style="padding:0 25px 0 35px;" class="checkbox"><input type="checkbox" name="pess[pess_bagges_departure][]"  /></label></td></label>
-												<td><label style="padding:0 15px 0 23px;" class="checkbox"><input type="checkbox" name="pess[pess_bagges_return][]"  /></label></td></label>
-											</tr>
-										</tbody>
-									</table>
-                                    </td>
-                                    <td>
-                                    <table>
-										<tbody>
-											<tr>
-												<td><label style="padding:0 4px 0 5px;" class="checkbox"><input type="checkbox"  name="pess[pess_wifi][]"  /></label></li></td></label>
-												<td><label style="padding:0 5px 0 2px;" class="checkbox"><input type="checkbox" name="pess[pess_sim][]"  /></label></li></td></label>
-                                                <td><label style="padding:0 15px 0 20px;" class="checkbox"><input type="checkbox" name="pess[pess_disney][]"  /></label></li></td></label>
-												<td><label style="padding:0 15px 0 23px;" class="checkbox"><input type="checkbox" name="pess[pess_other][]" /></label></li></td></label>
+												<td><label style="padding:0 4px 0 5px;" class="checkbox"><input type="checkbox"  name="pess[pess_wifi][]"  /></td>
+												<td><label style="padding:0 5px 0 2px;" class="checkbox"><input type="checkbox" name="pess[pess_sim][]"  /></td>
+                                                <td><input style="width:100px;" type="text" name="pess[pess_disney][]"/></td>
+												<td><input style="width:290px;" type="text" name="pess[pess_other][]" /></td>
 											</tr>
 										</tbody>
 									</table>

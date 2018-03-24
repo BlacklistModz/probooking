@@ -147,7 +147,9 @@ class Booking_Model extends Model {
         } return array();
 	}
 	public function insert(&$data){
-    	$this->db->insert('booking', $data);
+       
+        $this->db->insert('booking', $data);
+        
     	$data['id'] = $this->db->lastInsertId();
     }
     public function update($id, $data){
@@ -199,7 +201,9 @@ class Booking_Model extends Model {
         if( !empty($options["room"]) ){
             $data["room"] = $this->listsRoom($data["book_code"]);
         }
-
+        if( !empty($options["pessenger"])){
+            $data["pessenger"] = $this->listsPessenger($data["book_code"]);
+        }
         if( !empty($data['per_url_pdf']) && $data['per_url_pdf'] != 'undefined' ){
             $file = substr(strrchr($data['per_url_pdf'],"/"),1);
             if( file_exists(PATH_TRAVEL.$file) ){
@@ -235,6 +239,7 @@ class Booking_Model extends Model {
 
 
     public function detailInsert(&$data){
+       
     	$this->db->insert('booking_list', $data);
     	// $data['id'] = $this->db->lastInsertId();
     }
@@ -473,6 +478,38 @@ class Booking_Model extends Model {
         $sql = "SELECT {$this->_roomSelect} FROM {$this->_roomTable} {$where_str}  ORDER BY room_id DESC";
         return $this->buildFragRoom( $this->db->select($sql, $where_arr) );
     }
+    /* pessenger select */
+    private $_pessengerSelect = "*";
+    private $_pessengerTable = "pessenger";
+    public function listsPessenger( $code, $options=array() ){
+
+        $where_str = "";
+        $where_arr = array();
+
+        /* options zone */
+
+        /* condition */
+        $where_str .= !empty($where_str) ? " AND " : "";
+        $where_str .= "book_code=:code";
+        $where_arr[":code"] = $code;
+
+        $where_str = !empty($where_str) ? "WHERE {$where_str}" : "";
+
+        $sql = "SELECT {$this->_roomSelect} FROM {$this->_pessengerTable} {$where_str}  ORDER BY pess_id DESC";
+        return $this->buildFragePess( $this->db->select($sql, $where_arr) );
+    }
+    public function buildFragePess( $results, $options=array() ){
+        $data = array();
+        foreach ($results as $key => $value) {
+            if( empty($value) ) continue;
+            $data[] = $this->convertPess( $value, $options );
+        }
+        return $data;
+    }
+    public function convertPess( $data, $options=array() ){
+        $data = $this->_cutFirstFieldName("pess_", $data);
+        return $data;
+    }
     public function buildFragRoom( $results, $options=array() ){
         $data = array();
         foreach ($results as $key => $value) {
@@ -495,6 +532,7 @@ class Booking_Model extends Model {
             $this->db->insert($this->_roomTable, $data);
         }
     }
+
     public function unsetRoom($id){
         $this->db->delete($this->_roomTable, "room_id={$id}");
     }
@@ -506,4 +544,19 @@ class Booking_Model extends Model {
     public function salesLists(){
         return $this->db->select("SELECT user_id AS id, user_nickname AS name FROM user WHERE status=1 AND group_id IN (3,5,7) ORDER BY user_nickname ASC");
     }
+
+    public function setPessenger($data){
+        if( !empty($data["id"]) ){
+            $id = $data["id"];
+            unset($data["id"]);
+            $this->db->update($this->_pessengerTable, $data, "room_id={$id}");
+        }
+        else{
+            $this->db->insert($this->_pessengerTable, $data);
+        }
+    }  
+    public function unsetPessenger($id){
+        $this->db->delete($this->_pessengerTable, "room_id={$id}");
+    }    
+
 }

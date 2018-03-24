@@ -353,7 +353,6 @@ class Office extends Controller {
                             case 'child_bed': $name='Child No bed'; $price=$per['per_price_3']; break;
                             case 'infant': $name='Infant'; $price=$per['per_price_4']; break;
                             case 'joinland': $name='Joinland'; $price=$per['per_price_5']; break;
-
                             default: $name=''; $price=0; break;
                         }
                         $total = $value * $price;
@@ -510,7 +509,7 @@ class Office extends Controller {
                             $book["invoice_date"] = date("c");
                             $book["create_date"] = date("c");
                             $book["create_user_id"] = $this->me["id"];
-
+                            
                             $this->model->query('booking')->insert( $book );
 
                             /* -- update: prefixnumber -- */
@@ -533,14 +532,56 @@ class Office extends Controller {
                                 $this->model->query('booking')->detailInsert($value);
                             }
                         }
-
+                   
+                        /* SET FIELD FOR PESSENGER INFORMATION */
+                        if(!empty($book['book_room_twin'])){
+                            for($i=1; $i <= $book['book_room_twin']; $i++){
+                                $data = array();
+                                $running_roomno =1;
+                                if($i > $running_roomno*2){
+                                    $running_roomno++;
+                                }
+                              
+                                $data['book_code'] = $bookCode;
+                                $data['room_no'] = $running_roomno;
+                                $data['room_type'] ="twin";
+                                $this->model->query('booking')->setPessenger($data);
+                            }
+                        }
+                        if(!empty($book['book_room_double'])){
+                            for($i=1; $i <= $book['book_room_double']; $i++){
+                                $data = array();
+                                $data['book_code'] = $bookCode;
+                                $data['room_no'] = $i;
+                                $data['room_type'] ="double";
+                                $this->model->query('booking')->setPessenger($data);
+                            }
+                        }
+                        if(!empty($book['book_room_triple'])){
+                            for($i=1; $i <= $book['book_room_triple']; $i++){
+                                $data = array();
+                                $data['book_code'] = $bookCode;
+                                $data['room_no'] = $i;
+                                $data['room_type'] ="triple";                  
+                                $this->model->query('booking')->setPessenger($data);
+                            }
+                        }
+                        if(!empty($book['book_room_single'])){
+                            for($i=1; $i <= $book['book_room_single']; $i++){
+                                $data = array();
+                                $data['book_code'] = $bookCode;
+                                $data['room_no'] = $i;
+                                $data['room_type'] ="single";                  
+                                $this->model->query('booking')->setPessenger($data);
+                            }
+                        }
                         /* DEL DETAIL */
                         foreach ($_items as $key => $value) {
                             $this->model->query('booking')->detailDelete($value);
                         }
 
                         $arr['message'] = 'บันทึกข้อมูลการจองเรียบร้อย !';
-                        $arr['url'] = URL.'office/booking';
+                       // $arr['url'] = URL.'office/booking';
                     }
                     echo json_encode($arr);
                     exit;

@@ -252,13 +252,12 @@
                 );
                 // print_r($book); die;
                 $this->model->insert($book);
-
+            
 
                 /*-- insert: booking_list --*/
                 foreach ($seats as $key => $value) {
                     $value['book_code'] = $bookCode;
                     $value['create_date'] = date('c');
-
                     $this->model->detailInsert($value);
                 }
 
@@ -270,10 +269,10 @@
 
 
                 $arr['message'] = 'Thank You.';
-                $arr['url'] = URL.'booking/'.$book['id'];
+               // $arr['url'] = URL.'booking/'.$book['id'];
                 // $arr['url'] = URL;
             }
-
+          
            echo json_encode( $arr );
            die;
         }
@@ -593,7 +592,6 @@
 
         $item = $this->model->get($id, array('room'=>true));
         if( empty($item) ) $this->error();
-
         $_items = array();
         if( !empty($item["room"]) ){
             foreach ($item["room"] as $key => $value) {
@@ -614,6 +612,7 @@
                 $roomData["id"] = $_items[$i];
                 unset($_items[$i]);
             }
+            print_r($roomData);die;
             $this->model->setRoom($roomData);
         }
 
