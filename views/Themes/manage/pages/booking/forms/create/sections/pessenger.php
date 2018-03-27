@@ -61,6 +61,7 @@ input.inputtext.prename{
 		<form class="js-submit-form" action="<?=URL?>booking/setPessenger/<?=$this->item["book_id"]?>">
 			<?php foreach ($room as $key => $value) { 
 				if( empty($this->item[$value["key"]]) ) continue;
+	
 				?>
 				<div class="uiBoxOverlay pas mtl">
 					<span class="fwb"><?= $value["text"] ?> <?=$this->item[$value["key"]]?></span>
@@ -143,9 +144,11 @@ input.inputtext.prename{
 						</thead>
 						<tbody>
 							<?php
+							
 							$count = $value["count"] * $this->item[$value["key"]]; 
+							
 							$type = strtolower($value["text"]);
-					
+						
 							$n=0;
 							for($i=1;$i<=$count;$i++){ 
 								?>
@@ -153,7 +156,7 @@ input.inputtext.prename{
 									<td class="tac"><span class="mrs mls"><?=$i?>.</span></td>
 									<td>
 										</select>
-										<select class="inputtext" name="room[room_no][]">
+										<select class="inputtext" name="pess[room_no][]">
 											<?php 
 											for($j=1; $j<=$this->item[$value["key"]]; $j++){
 												$sel = '';
@@ -164,7 +167,7 @@ input.inputtext.prename{
 											}
 											?>
 										</select>
-										<input type="hidden" name="room[room_type][]" value="<?=$type?>">
+										<input type="hidden" name="pess[room_type][]" value="<?=$type?>">
 									</td>
 									<td>
 										<input type="text" class="inputtext prename" name="pess[title][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["title"] : "" ?>">
@@ -224,13 +227,14 @@ input.inputtext.prename{
 									</td>
 									<td>
                                     <table>
+						
 										<tbody>
 											<tr>
-												<td><label style="padding:0 15px 0 28px;" class="checkbox"><input type="checkbox" name="pess[pess_no_sf][]"/></label></td></label>
-												<td><label style="padding:0 10px 0 29px;" class="checkbox"><input type="checkbox" name="pess[pess_no_ck][]"/></label></td></label>
-												<td><label style="padding:0 5px 0 10px;" class="checkbox"><input type="checkbox"  name="pess[pess_no_pk][]"/></label></td></label>
-                                                <td><label style="padding:0 0px 0 20px;" class="checkbox"><input type="checkbox" name="pess[pess_no_bf][]"/></label></td></label>
-                                                <td><label style="padding:0 25px 0 31px;" class="checkbox"><input type="checkbox" name="pess[pess_vet][]"/></label></td></label>
+												<td><label style="padding:0 15px 0 28px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_sf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_sf][]"/></label></td></label>
+												<td><label style="padding:0 10px 0 29px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_ck'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_ck][]"/></label></td></label>
+												<td><label style="padding:0 5px 0 10px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_pk'])=='1' ? "checked" : "";?>   type="checkbox"  name="pess[pess_no_pk][]"/></label></td></label>
+                                                <td><label style="padding:0 0px 0 20px;" class="checkbox"><input  <?= !empty($data[$type][$n]['no_bf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_bf][]"/></label></td></label>
+                                                <td><label style="padding:0 25px 0 31px;" class="checkbox"><input <?= !empty($data[$type][$n]['vet'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_vet][]"/></label></td></label>
 											</tr>
 										</tbody>
 									</table>

@@ -589,19 +589,21 @@
 
     public function setRoom($id=null){
         if( empty($_POST) || empty($id) ) $this->error();
-
+      
         $item = $this->model->get($id, array('room'=>true));
         if( empty($item) ) $this->error();
+    print_r($item);die;
         $_items = array();
         if( !empty($item["room"]) ){
             foreach ($item["room"] as $key => $value) {
                 $_items[] = $value["id"];
             }
         }
-        print_r($_POST);die;
+      
         $room = $_POST["room"];
         for($i=0;$i<count($room["no"]);$i++){
             $roomData = array();
+            
             foreach ($_POST["room"] as $key => $value) {
                 $roomData["room_".$key] = $room[$key][$i];
             }
@@ -612,7 +614,7 @@
                 $roomData["id"] = $_items[$i];
                 unset($_items[$i]);
             }
-            print_r($roomData);die;
+          
             $this->model->setRoom($roomData);
         }
 
@@ -627,37 +629,40 @@
         echo json_encode($arr);
     }
     public function setPessenger($id=null){
+      
         if( empty($_POST) || empty($id) ) $this->error();
 
         $item = $this->model->get($id, array('pessenger'=>true));
         if( empty($item) ) $this->error();
+        
         $_items = array();
         if( !empty($item["pessenger"]) ){
             foreach ($item["pessenger"] as $key => $value) {
                 $_items[] = $value["id"];
             }
         }
-
-        $room = $_POST["pessenger"];
-        for($i=0;$i<count($room["no"]);$i++){
+    
+        $room = $_POST["pess"];
+        
+        for($i=0;$i<count($room["room_no"]);$i++){
             $roomData = array();
-            foreach ($_POST["pessenger"] as $key => $value) {
+            foreach ($_POST["pess"] as $key => $value) {
                 $roomData["pess_".$key] = $room[$key][$i];
             }
 
             $roomData["book_code"] = $_POST["book_code"];
-
+          
             if( !empty($_items[$i]) ){
                 $roomData["id"] = $_items[$i];
                 unset($_items[$i]);
             }
-            print_r($roomData);die;
-            $this->model->setRoom($roomData);
+            
+            $this->model->setPessenger($roomData);
         }
 
         if( !empty($_items) ){
             foreach ($_items as $key => $value) {
-                $this->model->unsetRoom( $value );
+                $this->model->unsetPessenger( $value );
             }
         }
 
