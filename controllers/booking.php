@@ -592,7 +592,7 @@
       
         $item = $this->model->get($id, array('room'=>true));
         if( empty($item) ) $this->error();
-    print_r($item);die;
+   
         $_items = array();
         if( !empty($item["room"]) ){
             foreach ($item["room"] as $key => $value) {
@@ -643,13 +643,30 @@
         }
     
         $room = $_POST["pess"];
-        
+  
         for($i=0;$i<count($room["room_no"]);$i++){
             $roomData = array();
-            foreach ($_POST["pess"] as $key => $value) {
-                $roomData["pess_".$key] = $room[$key][$i];
-            }
 
+              // set default is false checkbox no food wifi and sim request
+            $room['no_sf'][$i] = isset($_POST['pess']['no_sf'][$i]) ? $_POST['pess']['no_sf'][$i] : 0;
+            $room['no_ck'][$i] = isset($_POST['pess']['no_ck'][$i]) ? $_POST['pess']['no_ck'][$i] : 0;
+            $room['no_pk'][$i] = isset($_POST['pess']['no_pk'][$i]) ? $_POST['pess']['no_pk'][$i] : 0;
+            $room['no_bf'][$i] = isset($_POST['pess']['no_bf'][$i]) ? $_POST['pess']['no_bf'][$i] : 0;
+            $room['vet'][$i] = isset($_POST['pess']['vet'][$i]) ? $_POST['pess']['vet'][$i] : 0;
+            $room['wifi'][$i] = isset($_POST['pess']['wifi'][$i]) ? $_POST['pess']['wifi'][$i] : 0;
+            $room['sim'][$i] = isset($_POST['pess']['sim'][$i]) ? $_POST['pess']['sim'][$i] : 0;
+          
+           
+        
+            foreach ($room as $key => $value) {
+                if($key != 'room_no' && $key !='room_type'){
+                    $roomData["pess_".$key] = $room[$key][$i];
+                }else{
+                    $roomData[$key] = $room[$key][$i];
+                }
+                
+            }
+            
             $roomData["book_code"] = $_POST["book_code"];
           
             if( !empty($_items[$i]) ){
@@ -658,8 +675,9 @@
             }
             
             $this->model->setPessenger($roomData);
+            
         }
-
+       
         if( !empty($_items) ){
             foreach ($_items as $key => $value) {
                 $this->model->unsetPessenger( $value );

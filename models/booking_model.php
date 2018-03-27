@@ -524,9 +524,10 @@ class Booking_Model extends Model {
     }
     public function setRoom($data){
         if( !empty($data["id"]) ){
-            print_r($data);die;
+    
             $id = $data["id"];
             unset($data["id"]);
+            print_r($data);die;
             $this->db->update($this->_roomTable, $data, "room_id={$id}");
         }
         else{
@@ -550,10 +551,7 @@ class Booking_Model extends Model {
         if( !empty($data["id"]) ){
             $id = $data["id"];
             unset($data["id"]);
-            $data = $this->_cutFirstFieldName("pess_", $data);
-           
-            $this->db->update($this->_pessengerTable, $data, "pess_id={$id}");
-           
+            $this->db->update($this->_pessengerTable, $data, "pess_id={$id}");     
         }
         else{
             $this->db->insert($this->_pessengerTable, $data);

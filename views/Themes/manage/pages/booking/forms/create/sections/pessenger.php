@@ -33,6 +33,9 @@ if( !empty($this->item["pessenger"]) ){
 	border: 1px solid #dde6e9;
 	border-radius: 4px;*/
 }
+.uiPopover{
+	width:252.3px;
+}
 select.inputtext.sex{
 	width: 70px;
 }
@@ -204,7 +207,7 @@ input.inputtext.prename{
 										<input type="text" class="inputtext" name="pess[address][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["address"] : "" ?>">
 									</td>
 									<td>
-										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[birthday][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["birthday"])) : "" ?>">
+										<input style="width:252px;" type="date" class="inputtext" data-plugins="datepicker" name="pess[birthday][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["birthday"])) : "" ?>">
 									</td>
 									<td>
 										<input type="text" class="inputtext" name="pess[passportno][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["passportno"] : "" ?>">
@@ -223,18 +226,18 @@ input.inputtext.prename{
 										<input type="text" class="inputtext" name="pess[popp][]" value="<?= !empty($data[$type][$n]) ? $data[$type][$n]["popp"] : "" ?>">
 									</td>
 									<td>
-										<input type="date" class="inputtext" data-plugins="datepicker" name="pess[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
+										<input style="width:252.3px;" type="date" class="inputtext" data-plugins="datepicker" name="pess[date_pp][]" value="<?= !empty($data[$type][$n]) ? date("Y-m-d", strtotime($data[$type][$n]["date_pp"])) : "" ?>">
 									</td>
 									<td>
                                     <table>
 						
 										<tbody>
 											<tr>
-												<td><label style="padding:0 15px 0 28px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_sf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_sf][]"/></label></td></label>
-												<td><label style="padding:0 10px 0 29px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_ck'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_ck][]"/></label></td></label>
-												<td><label style="padding:0 5px 0 10px;" class="checkbox"><input <?= !empty($data[$type][$n]['no_pk'])=='1' ? "checked" : "";?>   type="checkbox"  name="pess[pess_no_pk][]"/></label></td></label>
-                                                <td><label style="padding:0 0px 0 20px;" class="checkbox"><input  <?= !empty($data[$type][$n]['no_bf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_no_bf][]"/></label></td></label>
-                                                <td><label style="padding:0 25px 0 31px;" class="checkbox"><input <?= !empty($data[$type][$n]['vet'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[pess_vet][]"/></label></td></label>
+												<td><label style="padding:0 15px 0 28px;" class="checkbox"><input value="1" <?= !empty($data[$type][$n]['no_sf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[no_sf][]"/></label></td></label>
+												<td><label style="padding:0 10px 0 29px;" class="checkbox"><input value="1" <?= !empty($data[$type][$n]['no_ck'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[no_ck][]"/></label></td></label>
+												<td><label style="padding:0 5px 0 10px;" class="checkbox"><input value="1" <?= !empty($data[$type][$n]['no_pk'])=='1' ? "checked" : "";?>   type="checkbox"  name="pess[no_pk][]"/></label></td></label>
+                                                <td><label style="padding:0 0px 0 20px;" class="checkbox"><input value="1"  <?= !empty($data[$type][$n]['no_bf'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[no_bf][]"/></label></td></label>
+                                                <td><label style="padding:0 25px 0 31px;" class="checkbox"><input value="1" <?= !empty($data[$type][$n]['vet'])=='1' ? "checked" : "";?>  type="checkbox" name="pess[vet][]"/></label></td></label>
 											</tr>
 										</tbody>
 									</table>
@@ -243,8 +246,8 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td> <input style="width:72px; height:32px;" type="text" name="pess[pess_bc][]"/></td>
-												<td><input style="width:32px; height:32px;</width:32>px;" type="text" name="pess[pess_hc][]"/></td>
+												<td> <input style="width:72px; height:32px;" type="text" name="pess[bc][]" value="<?=!empty($data[$type][$n]['bc'])? $data[$type][$n]['bc'] : ''?>"/></td>
+												<td><input style="width:32px; height:32px;</width:32>px;" type="text" name="pess[hs][]" value="<?=!empty($data[$type][$n]['hs']) ? $data[$type][$n]['hs'] : ''?>"/></td>
 										</tbody>
 									</table>
                                     </td>
@@ -252,8 +255,8 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td><input style="width:40px; height:32px;"  type="number" name="pess[pess_bagges_departure][]"/></td>
-												<td><input style="width:50px; height:32px;"  type="number" name="pess[pess_bagges_return][]"/></td>
+												<td><input style="width:40px; height:32px;"  type="number" name="pess[bagges_departure][]" value="<?=!empty($data[$type][$n]['bagges_departure']) ? $data[$type][$n]['bagges_departure'] : '' ?>"/></td>
+												<td><input style="width:50px; height:32px;"  type="number" name="pess[bagges_return][]" value="<?=!empty($data[$type][$n]['bagges_return']) ? $data[$type][$n]['bagges_return']  : '' ?>"/></td>
 											</tr>
 										</tbody>
 									</table>
@@ -262,10 +265,10 @@ input.inputtext.prename{
                                     <table>
 										<tbody>
 											<tr>
-												<td><label style="padding:0 4px 0 5px;" class="checkbox"><input type="checkbox"  name="pess[pess_wifi][]"  /></td>
-												<td><label style="padding:0 5px 0 2px;" class="checkbox"><input type="checkbox" name="pess[pess_sim][]"  /></td>
-                                                <td><input style="width:100px;" type="text" name="pess[pess_disney][]"/></td>
-												<td><input style="width:290px;" type="text" name="pess[pess_other][]" /></td>
+												<td><label style="padding:0 4px 0 5px;" class="checkbox"><input value="1" <?=!empty($data[$type][$n]['wifi'])? 'checked' : ''?> type="checkbox"  name="pess[wifi][]"  /></td>
+												<td><label style="padding:0 5px 0 2px;" class="checkbox"><input value="1" <?=!empty($data[$type][$n]['sim'])? 'checked':'' ?> type="checkbox" name="pess[sim][]"  /></td>
+                                                <td><input style="width:100px;" type="text" name="pess[disney][]" value="<?=!empty($data[$type][$n]['disney'])? $data[$type][$n]['disney'] : ''?>" /></td>
+												<td><input style="width:290px;" type="text" name="pess[other][]" value="<?=!empty($data[$type][$n]['other'])? $data[$type][$n]['other']: '' ?>" /></td>
 											</tr>
 										</tbody>
 									</table>
