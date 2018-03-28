@@ -51,7 +51,51 @@ class Time_Fn extends _function {
         }
         return $text;
     }
+    public function form_now($timestamp, $style=false){
+        $timestamp = strtotime($timestamp);
+        $difference = time() - $timestamp;
+        $periods = array("วินาที", "นาที", "ชั่วโมง");
+        $ending = "ที่แล้ว";
 
+        $dayName = array(0 => "วันอาทิตย์", "วันจันทร์", "วันอังคาร", "วันพุธ", "วันพฤหัสษบดี", "วันศุกร์", "วันเสาร์");
+        $strDate = date("j", $timestamp) . " " . $this->month( date("n", $timestamp), $style);
+        $strYear = date("Y", $timestamp) + 543;
+        $strTimes = " เวลา " . date("H:i", $timestamp) . " น.";
+        $dataDate = $this->day(date('w', $timestamp), true) . "ที่ $strDate $strYear $strTimes";
+
+        if ($difference < 60) {
+            $j = 0;
+            $periods[$j].=($difference != 1) ? "" : "";
+            $text = "$difference $periods[$j]$ending";
+            $text = ($text == "0 วินาทีที่แล้ว") ? "ไม่กี่$periods[$j]$ending" : "$difference $periods[$j]$ending";
+        } elseif ($difference < 3600) { // นาที
+            $j = 1;
+            $difference = round($difference / 60);
+            $periods[$j].=($difference != 1) ? "" : "";
+            $text = "$difference $periods[$j]$ending";
+        } elseif ($difference < 86400) { // ชม
+            $j = 2;
+            $difference = round($difference / 3600);
+            $periods[$j].=($difference != 1) ? "" : "";
+            $difference = ($difference != 1) ? $difference : "ประมาณ 1";
+            $text = "$difference $periods[$j]$ending";
+        } elseif ($difference < 172800) {
+            $difference = round($difference / 86400);
+            $text = "เมื่อวานนี้ " . " เวลา " . date("H.i", $timestamp) . " น.";
+        } elseif ($difference < 259200) {
+            $difference = round($difference / 172800);
+            $text = "เมื่อ" . $this->day(date("w", $timestamp), true) . " เวลา " . date("H.i", $timestamp) . " น.";
+        } else {
+            $text = $strDate;
+
+            if ($timestamp < strtotime(date("Y-01-01 00:00:00")))
+                $text .= " " . $strYear;
+            $text .= $strTimes;
+        }
+
+       
+        return $text;
+    }
     public function stamp($timestamp=null){
         $timestamp = strtotime($timestamp);
         $difference = time() - $timestamp;

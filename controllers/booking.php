@@ -539,6 +539,18 @@
            
       //  $this->model->unsetPassport($id);
     }
+    public function Unlock_passport($id=null){
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : id;
+        if(!isset($id)) $this->error();
+        if(!empty($_POST)){
+            $this->model->Unlock_passport($id);
+            $arr['message'] = 'คำขอเสร็จสมบูรณ์';
+        }else{
+            $arr['message'] = 'เกิดข้อผิดพลาด';
+        }
+        echo json_encode($arr);
+     
+    }
     public function zip_passport($id=null){
         $id = isset($_REQUEST['id']) ? $_REQUEST['$ID'] : $id;
        // if(empty($_POST['Authentication'])) $this->error();
@@ -677,7 +689,8 @@
             $this->model->setPessenger($roomData);
             
         }
-       
+        
+        
         if( !empty($_items) ){
             foreach ($_items as $key => $value) {
                 $this->model->unsetPessenger( $value );
